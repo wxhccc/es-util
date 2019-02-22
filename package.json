@@ -1,0 +1,30 @@
+{
+  "name": "es-util",
+  "version": "1.0.0",
+  "description": "A library that contains some useful methods",
+  "main": "lib/index.js",
+  "module": "lib/dist.es.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "rollup -w -c --environment NODE_ENV:development",
+    "build": "rollup -c",
+    "start": "npm run dev"
+  },
+  "keywords": [
+    "array-tree-switch",
+    "array",
+    "tree",
+    "array2tree",
+    "tree2array"
+  ],
+  "author": "wxhccc",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.3.3",
+    "@babel/preset-env": "^7.3.1",
+    "rollup": "^1.2.2",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-uglify": "^6.0.2"
+  }
+}
