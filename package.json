@@ -19,6 +19,14 @@
   ],
   "author": "wxhccc",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wxhccc/es-util.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wxhccc/es-util/issues"
+  },
+  "homepage": "https://github.com/wxhccc/es-util#readme",
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/preset-env": "^7.3.1",
