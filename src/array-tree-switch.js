@@ -24,22 +24,29 @@ export function array2tree (array, options = {}) {
   }
   return treeNodes
 }
-
+function getNoChildNode (node, childrenKey) {
+  let newNode = {}
+  for(let i in node) {
+    i !== childrenKey && (newNode[i] = node[i])
+  }
+  return newNode
+}
 // translate tree to array
 export function tree2array (tree, options = {}) {
-  let nodes = []
-  if (!Array.isArray(tree) && typeof tree !== 'object') return nodes
-  const { primaryKey: id, parentKey: pid, childrenKey: children, hasParentKey } = Object.assign({
+  const { primaryKey: id, parentKey: pid, childrenKey: children, hasParentKey, returnObject } = Object.assign({
     hasParentKey: true,
     primaryKey: 'id',
     parentKey: 'pid',
-    childrenKey: 'children'
+    childrenKey: 'children',
+    returnObject: false
   }, options)
+  let nodes = returnObject ? {} : []
+  if (!Array.isArray(tree) && typeof tree !== 'object') return nodes
   function getNode (node, parentId, root) {
     let baseNode = hasParentKey ? {} : { [pid]: parentId }
     if (!root) {
-      propertyIsEnumerable.call(node, children) && Object.defineProperty(node, children, { enumerable: false })
-      nodes.push(Object.assign(baseNode, node))
+      const newNode = Object.assign(baseNode, getNoChildNode(node, children))
+      returnObject ? (nodes[node[id]] = newNode) : nodes.push(newNode)
     }
     if (Array.isArray(node[children]) && node[children].length) {
       node[children].forEach(childNode => getNode(childNode, node[id]))

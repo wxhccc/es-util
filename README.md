@@ -57,6 +57,8 @@ console.log(EsUtil.array2tree)
 
 # API
 
+## array-tree-switch module
+
 ### `array2tree(array, options)`
 
 transform an array to tree structure
@@ -167,6 +169,59 @@ const tree = array2tree(array, {
   { id: 3, pid: 1, name: 'chinese' }
 ]
 
+*/
+```
+
+## validate module
+
+### `ChinaIdCardValid(idCard)`
+
+Check whether the Chinese id number provided is valid
+
+**parameters:**
+- **idCard**            {String}    The IDcard number.
+
+
+**returns**: boolean
+
+Example
+
+```javascript
+import { ChinaIdCardValid } from 'es-util'
+
+
+console.log(ChinaIdCardValid('[valid IDcard]')
+console.log(ChinaIdCardValid('111111111111111111')
+/* log
+true
+false
+*/
+```
+
+### `formulaValidate(formulaString, variables)`
+
+Check whether the formulaString provided is valid
+
+**parameters:**
+- **formulaString**            {String}    The formula string.
+- **variables**                {Array}    The variables can appear in formula.
+
+
+**returns**: boolean
+
+Example
+
+```javascript
+import { formulaValidate } from 'es-util'
+
+
+console.log(formulaValidate('A+B*(D-C/E)')
+console.log(formulaValidate('A+*B/E')
+console.log(formulaValidate('A+*B/E', ['A', 'B', 'C'])
+/* log
+true
+false
+false
 */
 ```
 
