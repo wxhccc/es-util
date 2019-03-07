@@ -225,6 +225,39 @@ false
 */
 ```
 
+## object-array module
+
+### `mapToObject(objectArray, keyProp, valueProp)`
+
+create an object from an object array.
+
+**parameters:**
+- **objectArray**      {Array}    The source object array.
+- **keyProp**          {String/Function}    The property of array item be used for key, or the function to create object key, default `"key"`.
+  > if array item not contain key or function not return a string/number，the item will ignore.
+- **valueProp**        {String/Function}    The property of array item be used for value, or the function to create object value, default `"value"`.
+
+**returns**: object
+
+Example
+
+```javascript
+import { mapToObject } from 'es-util'
+
+const array = [
+  { key: 'a', value: 'b', name: 'afsfsdfe' },
+  { key: 'a1', value: 'b1', name: 'afssdfsfe' },
+  { key: 'a2', value: 'b2', name: 'afsfgege' }
+]
+console.log(mapToObject(array)
+/* log
+{ a: 'b', a1: 'b1', a2: 'b2' }
+*/
+console.log(mapToObject(array, item => (item.key + item.value), 'name'))
+/* log
+{ ab: 'afsfsdfe', a1b1: 'afssdfsfe', a2b2: 'afsfgege' }
+*/
+```
 
 ## License
 MIT

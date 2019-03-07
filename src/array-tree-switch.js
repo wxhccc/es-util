@@ -1,4 +1,4 @@
-const { hasOwnProperty, propertyIsEnumerable } = Object.prototype
+const { hasOwnProperty } = Object.prototype
 function createNode (children, value = []) {
   return { [children]: value }
 }

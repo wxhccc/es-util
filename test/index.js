@@ -62,5 +62,19 @@ describe('#validate', function () {
       assert.equal(formulaValidate('A+B-*D*(A/E)', ['A', 'B']), false)
     })
   })
+
+  describe('#object-array', function () {
+    describe('#mapToObject', function () {
+      const { mapToObject } = esUtil
+      const objectArray = [
+        { key: 'a', value: 'b', name: 'afsfsdfe' },
+        { key: 'a1', value: 'b1', name: 'afssdfsfe' },
+        { key: 'a2', value: 'b2', name: 'afsfgege' }
+      ]
+      it('should return an object which key and value come from the provide object array', function () {
+        assert.deepStrictEqual(mapToObject(objectArray), { a: 'b', a1: 'b1', a2: 'b2' })
+      })
+    })
+  })
   
 })
