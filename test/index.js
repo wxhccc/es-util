@@ -76,5 +76,27 @@ describe('#validate', function () {
       })
     })
   })
+
+  describe('#value-string-switch', function () {
+    describe('#byte-string', function () {
+      describe('#byteStringify', function () {
+        const { byteStringify } = esUtil
+        it('should return `1.2 KB` if run byteStringify(1234)', function () {
+          assert.equal(byteStringify(1234), '1.2 KB')
+        })
+        it('should return `-1.20 KB` if run byteStringify(-1234, { precision: 2 })', function () {
+          assert.equal(byteStringify(-1234, { precision: 2 }), '-1.21 KB')
+        })
+        it('should return `0.001 MB` if run byteStringify(1234, { unitLvl: \'M\', precision: 3 })', function () {
+          assert.equal(byteStringify(1234, { unitLvl: 'M', precision: 3 }), '0.001 MB')
+        })
+        it('should return an object `{ value: \'1.234\', unit: \'KB\'}` if run byteStringify(1234, { detail: true, standard: \'metric\', precision: 3 })', function () {
+          assert.deepStrictEqual(byteStringify(1234, { detail: true, standard: 'metric', precision: 3 }), { value: '1.234', unit: 'kB' })
+        })
+        
+      })
+      
+    })
+  })
   
 })

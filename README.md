@@ -259,5 +259,38 @@ console.log(mapToObject(array, item => (item.key + item.value), 'name'))
 */
 ```
 
+## value-string-switch module
+
+### `byteStringify(byteNum, options)`
+
+transform byte size to a string in the specified format
+
+**parameters:**
+- **byteNum**            {Number}    The size number need to transform.
+- **options**    {Object}    The options.
+- **options.standard** {String}   the standard used to transform, default `'jedec'`, suport `'metric'`, `'iec'`. [Metric, IEC and JEDEC units](https://en.wikipedia.org/wiki/Gigabyte)
+- **options.unitLvl** {String}   the unit lvl to transform byte size, default `'auto'`. suport `'B','K','M','G','T','P','E','Z','Y'`
+- **options.precision** {Number}   the precision of value, default `1` 
+- **options.detail** {Boolean}   whether to return an object of detai info, default `false`.
+
+
+**returns**: string or object
+
+Example
+
+```javascript
+import { byteStringify } from 'es-util'
+
+byteStringify(1234)
+/*log '1.2 KB'*/
+byteStringify(-1234, { precision: 2 })
+/*log '-1.21 KB'*/
+byteStringify(1234, { unitLvl: 'M', precision: 3 })
+/*log '0.001 MB'*/
+byteStringify(1234, { detail: true, standard: 'metric', precision: 3 })
+/*log { value: '1.234', unit: 'kB' } */
+
+```
+
 ## License
 MIT
