@@ -97,6 +97,35 @@ describe('#validate', function () {
       })
       
     })
+
+    describe('#case-switch', function () {
+      describe('#camelize', function () {
+        const { camelize } = esUtil
+        it('should return `aaaBbbCcc` if run camelize(\'aaa_bbb_ccc\')', function () {
+          assert.equal(camelize('aaa_bbb_ccc'), 'aaaBbbCcc')
+        })
+        it('should return `aaaBbbCcc` if run camelize(\'aaa-bbb-ccc\')', function () {
+          assert.equal(camelize('aaa-bbb-ccc'), 'aaaBbbCcc')
+        })
+        it('should return `aaaBbbCcc` if run camelize(\'aaa_bbb-ccc\')', function () {
+          assert.equal(camelize('aaa_bbb-ccc'), 'aaaBbbCcc')
+        })
+      })
+      describe('#hyphenate', function () {
+        const { hyphenate } = esUtil
+        it('should return `aaa-bbb-ccc` if run hyphenate(\'aaaBbbCcc\')', function () {
+          assert.equal(hyphenate('aaaBbbCcc'), 'aaa-bbb-ccc')
+        })
+      })
+      describe('#camel2snake', function () {
+        const { camel2snake } = esUtil
+        it('should return `aaa_bbb_ccc` if run camel2snake(\'aaaBbbCcc\')', function () {
+          assert.equal(camel2snake('aaaBbbCcc'), 'aaa_bbb_ccc')
+        })
+      })
+
+    })
+
   })
   
 })
