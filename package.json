@@ -18,7 +18,9 @@
     "tree2array",
     "idCard",
     "validate",
-    "mapToObject"
+    "mapToObject",
+    "string-switch",
+    "camelize,hyphenate,camel2snake"
   ],
   "author": "wxhccc",
   "license": "MIT",

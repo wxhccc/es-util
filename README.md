@@ -162,13 +162,13 @@ const tree = {
 const tree = array2tree(array, {
   hasParentKey: false
 })
+console.log(tree)
 /* log
 [
   { id: 1, pid: 0, name: 'language' },
   { id: 2, pid: 1, name: 'english' },
   { id: 3, pid: 1, name: 'chinese' }
 ]
-
 */
 ```
 
@@ -289,6 +289,48 @@ byteStringify(1234, { unitLvl: 'M', precision: 3 })
 /*log '0.001 MB'*/
 byteStringify(1234, { detail: true, standard: 'metric', precision: 3 })
 /*log { value: '1.234', unit: 'kB' } */
+
+```
+
+### `camelize(string)`
+
+camelize string
+
+**parameters:**
+- **string**            {String}    The string need to camelize.
+
+**returns**: string
+
+### `hyphenate(string)`
+
+hyphenate string
+
+**parameters:**
+- **string**            {String}    The string need to hyphenate.
+
+**returns**: string
+
+### `camel2snake(string)`
+
+switch camelize string to snake style(`_`)
+
+**parameters:**
+- **string**            {String}    The string need to switch.
+
+**returns**: string
+
+Example
+
+```javascript
+import { camelize, hyphenate, camel2snake } from 'es-util'
+
+camelize('aa-bb-cc')
+camelize('aa_bb_cc')
+/*log 'aaBbCc' */
+hyphenate('aaBbCc')
+/*log 'aa-bb-cc' */
+camel2snake('aaBbCc')
+/*log 'aa_bb_cc'*/
 
 ```
 
