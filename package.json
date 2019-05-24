@@ -3,7 +3,7 @@
   "version": "1.4.1",
   "description": "A library that contains some useful methods",
   "main": "lib/index.js",
-  "module": "lib/dist.es.js",
+  "module": "lib/index.es.js",
   "scripts": {
     "test": "mocha",
     "dev": "rollup -w -c --environment NODE_ENV:development",

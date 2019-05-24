@@ -16,6 +16,10 @@ describe('#array-tree-switch', function () {
         { id: 3, pid: 0, name: 'aaaa', children: [] }
       ])
     })
+    it(`node's '_parent' will point to it's parent node`, function () {
+      const tree = array2tree(array, { parentRefKey: true })
+      assert.deepStrictEqual(tree[0].children[0]._parent, tree[0])
+    })
   })
 
   describe('#tree2array', function () {

@@ -70,7 +70,8 @@ transform an array to tree structure
 - **options.parentKey** {String}   the parent key of array item, default `'pid'` 
 - **options.childrenKey** {String}   the childrenKey key of tree structure node, default `'children'` 
 - **options.createRoot** {Boolean/Function}   whether to create a root node, default `'false'`, will return an array, if `'true'` ,will return an object. you can pass an function as well, the transformed array will pass to function
-
+- **options.parentRefKey** {Boolean/String}   whether to create a reference of current node's parent, default `'false'`, will do nothing. if you set it to string or `'true'(mean '_parent')` ,will use it as the object key which point to the parent node of current node.
+>warning: set the `parentRefKey` will make the return tree object/array cycling, so you can't use `JSON.stringify` to stringify it
 
 **returns**: array or object with tree structure.
 
@@ -114,6 +115,45 @@ const tree = array2tree(array, {
     }
   ]
 }
+*/
+const tree = array2tree(array, {
+  parentRefKey: true
+})
+/* log
+[
+  {
+    id: 1,
+    pid: 0,
+    name: 'language',
+    _parent: null,
+    children: [
+      {
+        id: 2,
+        pid: 1,
+        name: 'english',
+        children: [],
+        _parent: {
+          id: 1,
+          pid: 0
+          ...,
+          _parent: ...
+        }
+      },
+      {
+        id: 3,
+        pid: 1,
+        name: 'chinese',
+        children: [],
+        _parent: {
+          id: 1,
+          pid: 0
+          ...,
+          _parent: ...
+        }
+      }
+    ]
+  }
+]
 */
 ```
 

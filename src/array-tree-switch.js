@@ -4,17 +4,19 @@ function createNode (children, value = []) {
 }
 // translate array to tree
 export function array2tree (array, options = {}) {
-  const { primaryKey: id, parentKey: pid, childrenKey: children, createRoot } = Object.assign({
+  const { primaryKey: id, parentKey: pid, childrenKey: children, createRoot, parentRefKey } = Object.assign({
     primaryKey: 'id',
     parentKey: 'pid',
     childrenKey: 'children',
-    createRoot: false
+    createRoot: false,
+    parentRefKey: false
   }, options)
+  const pRefKey = parentRefKey && (typeof parentRefKey === 'string' ? parentRefKey : '_parent')
   let nodeMap = {}
   let treeNodes = []
   Array.isArray(array) && array.forEach(item => {
-    !hasOwnProperty.call(nodeMap, item[id]) && (nodeMap[item[id]] = Object.assign(createNode(children), item))
-    hasOwnProperty.call(nodeMap, item[pid]) && nodeMap[item[pid]][children].push(nodeMap[item[id]])
+    !hasOwnProperty.call(nodeMap, item[id]) && (nodeMap[item[id]] = Object.assign({}, item, createNode(children)))
+    hasOwnProperty.call(nodeMap, item[pid]) && nodeMap[item[pid]][children].push(Object.assign(nodeMap[item[id]], pRefKey ? { [pRefKey]: nodeMap[item[pid]] } : {}))
     !item[pid] && treeNodes.push(nodeMap[item[id]])
   })
   if (typeof createRoot === 'function') {
