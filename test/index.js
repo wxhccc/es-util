@@ -66,70 +66,99 @@ describe('#validate', function () {
       assert.equal(formulaValidate('A+B-*D*(A/E)', ['A', 'B']), false)
     })
   })
+})
 
-  describe('#object-array', function () {
-    describe('#mapToObject', function () {
-      const { mapToObject } = esUtil
-      const objectArray = [
-        { key: 'a', value: 'b', name: 'afsfsdfe' },
-        { key: 'a1', value: 'b1', name: 'afssdfsfe' },
-        { key: 'a2', value: 'b2', name: 'afsfgege' }
-      ]
-      it('should return an object which key and value come from the provide object array', function () {
-        assert.deepStrictEqual(mapToObject(objectArray), { a: 'b', a1: 'b1', a2: 'b2' })
-      })
+describe('#object-array', function () {
+  describe('#mapToObject', function () {
+    const { mapToObject } = esUtil
+    const objectArray = [
+      { key: 'a', value: 'b', name: 'afsfsdfe' },
+      { key: 'a1', value: 'b1', name: 'afssdfsfe' },
+      { key: 'a2', value: 'b2', name: 'afsfgege' }
+    ]
+    it('should return an object which key and value come from the provide object array', function () {
+      assert.deepStrictEqual(mapToObject(objectArray), { a: 'b', a1: 'b1', a2: 'b2' })
     })
   })
+  describe('#checkoutBy', function () {
+    const { checkoutBy } = esUtil
+    const { merge } = require('lodash')
+    const object = {
+      a: { key: 'a', name: 'afsfsdfe' },
+      b: { key: 'a1', name: { a: 'afssdfsfe' } },
+      c: { key: 'a2', name: 'afsfgege' }
+    }
+    it(`test \`checkoutBy(object, ['a', 'c'])\``, function () {
+      assert.deepStrictEqual(checkoutBy(object, ['a', 'c']), [{ key: 'a', name: 'afsfsdfe' }, { key: 'a2', name: 'afsfgege' }])
+    })
+    it(`test \`checkoutBy(object, {'a': null, 'b': { name: 'aaa' } })\``, function () {
+      assert.deepStrictEqual(checkoutBy(object, {'a': null, 'b': { name: 'aaa' } }), [{ key: 'a', name: 'afsfsdfe' }, { key: 'a1', name: 'aaa' }])
+    })
+    it(`test \`checkoutBy(object, {'a': null, 'b': { name: { b: 'aaa' } } }, merge)\``, function () {
+      assert.deepStrictEqual(checkoutBy(object, {'a': null, 'b': { name: { b: 'aaa' } } }, merge), [{ key: 'a', name: 'afsfsdfe' }, { key: 'a1', name: { a: 'afssdfsfe', b: 'aaa' } }])
+    })
+  })
+  describe('#pickRenameKeys', function () {
+    const { pickRenameKeys } = esUtil
+    const object = {
+      a: { name: 'afsfsdfe' },
+      b: 3,
+      c: [123],
+      d: 'aaa'
+    }
+    it('should return an object which keys are new keys and values are old keys values', function () {
+      assert.deepStrictEqual(pickRenameKeys(object, { 'a': 'a1', 'c': 'c3', 'd': 'd' }), { a1: { name: 'afsfsdfe' }, c3: [123], d: 'aaa' })
+    })
+  })
+})
 
-  describe('#value-string-switch', function () {
-    describe('#byte-string', function () {
-      describe('#byteStringify', function () {
-        const { byteStringify } = esUtil
-        it('should return `1.2 KB` if run byteStringify(1234)', function () {
-          assert.equal(byteStringify(1234), '1.2 KB')
-        })
-        it('should return `-1.20 KB` if run byteStringify(-1234, { precision: 2 })', function () {
-          assert.equal(byteStringify(-1234, { precision: 2 }), '-1.21 KB')
-        })
-        it('should return `0.001 MB` if run byteStringify(1234, { unitLvl: \'M\', precision: 3 })', function () {
-          assert.equal(byteStringify(1234, { unitLvl: 'M', precision: 3 }), '0.001 MB')
-        })
-        it('should return an object `{ value: \'1.234\', unit: \'KB\'}` if run byteStringify(1234, { detail: true, standard: \'metric\', precision: 3 })', function () {
-          assert.deepStrictEqual(byteStringify(1234, { detail: true, standard: 'metric', precision: 3 }), { value: '1.234', unit: 'kB' })
-        })
-        
+describe('#value-string-switch', function () {
+  describe('#byte-string', function () {
+    describe('#byteStringify', function () {
+      const { byteStringify } = esUtil
+      it('should return `1.2 KB` if run byteStringify(1234)', function () {
+        assert.equal(byteStringify(1234), '1.2 KB')
+      })
+      it('should return `-1.20 KB` if run byteStringify(-1234, { precision: 2 })', function () {
+        assert.equal(byteStringify(-1234, { precision: 2 }), '-1.21 KB')
+      })
+      it('should return `0.001 MB` if run byteStringify(1234, { unitLvl: \'M\', precision: 3 })', function () {
+        assert.equal(byteStringify(1234, { unitLvl: 'M', precision: 3 }), '0.001 MB')
+      })
+      it('should return an object `{ value: \'1.234\', unit: \'KB\'}` if run byteStringify(1234, { detail: true, standard: \'metric\', precision: 3 })', function () {
+        assert.deepStrictEqual(byteStringify(1234, { detail: true, standard: 'metric', precision: 3 }), { value: '1.234', unit: 'kB' })
       })
       
     })
+    
+  })
 
-    describe('#case-switch', function () {
-      describe('#camelize', function () {
-        const { camelize } = esUtil
-        it('should return `aaaBbbCcc` if run camelize(\'aaa_bbb_ccc\')', function () {
-          assert.equal(camelize('aaa_bbb_ccc'), 'aaaBbbCcc')
-        })
-        it('should return `aaaBbbCcc` if run camelize(\'aaa-bbb-ccc\')', function () {
-          assert.equal(camelize('aaa-bbb-ccc'), 'aaaBbbCcc')
-        })
-        it('should return `aaaBbbCcc` if run camelize(\'aaa_bbb-ccc\')', function () {
-          assert.equal(camelize('aaa_bbb-ccc'), 'aaaBbbCcc')
-        })
+  describe('#case-switch', function () {
+    describe('#camelize', function () {
+      const { camelize } = esUtil
+      it('should return `aaaBbbCcc` if run camelize(\'aaa_bbb_ccc\')', function () {
+        assert.equal(camelize('aaa_bbb_ccc'), 'aaaBbbCcc')
       })
-      describe('#hyphenate', function () {
-        const { hyphenate } = esUtil
-        it('should return `aaa-bbb-ccc` if run hyphenate(\'aaaBbbCcc\')', function () {
-          assert.equal(hyphenate('aaaBbbCcc'), 'aaa-bbb-ccc')
-        })
+      it('should return `aaaBbbCcc` if run camelize(\'aaa-bbb-ccc\')', function () {
+        assert.equal(camelize('aaa-bbb-ccc'), 'aaaBbbCcc')
       })
-      describe('#camel2snake', function () {
-        const { camel2snake } = esUtil
-        it('should return `aaa_bbb_ccc` if run camel2snake(\'aaaBbbCcc\')', function () {
-          assert.equal(camel2snake('aaaBbbCcc'), 'aaa_bbb_ccc')
-        })
+      it('should return `aaaBbbCcc` if run camelize(\'aaa_bbb-ccc\')', function () {
+        assert.equal(camelize('aaa_bbb-ccc'), 'aaaBbbCcc')
       })
-
+    })
+    describe('#hyphenate', function () {
+      const { hyphenate } = esUtil
+      it('should return `aaa-bbb-ccc` if run hyphenate(\'aaaBbbCcc\')', function () {
+        assert.equal(hyphenate('aaaBbbCcc'), 'aaa-bbb-ccc')
+      })
+    })
+    describe('#camel2snake', function () {
+      const { camel2snake } = esUtil
+      it('should return `aaa_bbb_ccc` if run camel2snake(\'aaaBbbCcc\')', function () {
+        assert.equal(camel2snake('aaaBbbCcc'), 'aaa_bbb_ccc')
+      })
     })
 
   })
-  
+
 })

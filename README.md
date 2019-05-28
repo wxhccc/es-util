@@ -299,6 +299,73 @@ console.log(mapToObject(array, item => (item.key + item.value), 'name'))
 */
 ```
 
+### `checkoutBy(object, keys, mergeFn)`
+
+checkout an array from an object by gived keys, you can merge new data to object item
+
+**parameters:**
+- **object**      {Object}    The source object.
+- **keys**          {Array/Object}    The properties array of `object`. or an object contains keys which you want to pick from `object` and values you want to merge to those picked values. if keys not provided, will return `Object.values(object)`
+- **mergeFn**        {Function}  this method use `Object.assign` to merge values where two value are object, you can provide custom function to merge value.
+  - **empty** {Object} empty object
+  - **objectValue** {Object} the value of object[keyitem]
+  - **keysValue** {Object} the value of keys[keyitem]
+
+**returns**: array
+
+Example
+
+```javascript
+import { checkoutBy } from 'es-util'
+
+const configs = {
+  a: { key: 1, name: 'afsfsdfe' },
+  b: { key: 2, name: { a: 'afssdfsfe' } },
+  c: { key: 3, name: 'afsfgege' },
+  d: { key: 4 }
+}
+console.log(checkoutBy(configs, ['a', 'c'])
+/* log
+[{ key: 1, name: 'afsfsdfe' }, { key: 3, name: 'afsfgege' }]
+*/
+console.log(checkoutBy(configs, { a: null, b: { name: { b: 'aaa' } } })
+/* log
+[{ key: 1, name: 'afsfsdfe' }, { key: 2, name: { b: 'aaa' } }]
+*/
+const { merge } = required('lodash')
+console.log(checkoutBy(configs, { d: 123, b: { name: { b: 'aaa' } } }, merge)
+/* log
+[123, { key: 2, name: { a: 'afssdfsfe', b: 'aaa' } }]
+*/
+```
+
+### `pickRenameKeys(object, keysMap)`
+
+pick and rename object's keys
+
+**parameters:**
+- **object**      {Object}    The source object.
+- **keysMap**          {Object}    The `oldKey-newKey` object
+
+**returns**: array
+
+Example
+
+```javascript
+import { pickRenameKeys } from 'es-util'
+
+const configs = {
+  a: { name: 'afsfsdfe' },
+  b: 3,
+  c: [123],
+  d: 'aaa'
+}
+console.log(pickRenameKeys(configs, { 'a': 'a1', 'c': 'c3', 'd': 'd' })
+/* log
+{ a1: { name: 'afsfsdfe' }, c3: [123], d: 'aaa' }
+*/
+```
+
 ## value-string-switch module
 
 ### `byteStringify(byteNum, options)`
