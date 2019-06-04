@@ -7,11 +7,11 @@
 
 #### npm
 ```shell
-$ npm install es-util --save
+$ npm install @wxhccc/es-util --save
 ```
 #### in browser
 
-`<script src="https://cdn.jsdelivr.net/npm/es-util/lib/index.min.js"></script>`
+`<script src="https://cdn.jsdelivr.net/npm/@wxhccc/es-util/lib/index.min.js"></script>`
 
 # Usage
 
