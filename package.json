@@ -7,7 +7,8 @@
   "scripts": {
     "test": "mocha",
     "dev": "rollup -w -c --environment NODE_ENV:development",
-    "build": "rollup -c",
+    "build": "rollup -c && npm run build:types",
+    "build:types": "tsc",
     "start": "npm run dev"
   },
   "keywords": [
@@ -35,14 +36,19 @@
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/preset-env": "^7.3.1",
+    "@rollup/plugin-typescript": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
     "babel-eslint": "^8.2.6",
     "eslint": "^4.19.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "mocha": "^6.0.2",
     "rollup": "^1.2.2",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-node-resolve": "^4.0.0",
-    "rollup-plugin-uglify": "^6.0.2"
+    "rollup-plugin-uglify": "^6.0.4",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.5"
   },
   "dependencies": {}
 }
