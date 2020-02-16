@@ -40,7 +40,7 @@ function getConfig(env) {
   });
   const umdMinCfg = createConfig({
     output: {
-      file: 'lib/index.mins.js',
+      file: 'lib/index.min.js',
       name: 'EsUtil',
       format: 'umd'
     }

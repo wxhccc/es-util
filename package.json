@@ -4,6 +4,7 @@
   "description": "A library that contains some useful methods",
   "main": "lib/index.js",
   "module": "lib/index.es.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "test": "mocha",
     "dev": "rollup -w -c --environment NODE_ENV:development",
