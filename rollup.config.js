@@ -1,50 +1,60 @@
-import node from 'rollup-plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
+import resolve from "@rollup/plugin-node-resolve";
+import babel from "@rollup/plugin-babel";
+import commonjs from "@rollup/plugin-commonjs";
 import typescript from '@rollup/plugin-typescript';
-import { uglify } from 'rollup-plugin-uglify';
+import { terser } from "rollup-plugin-terser";
+import pkg from "./package.json";
 
 function createConfig(config, plugins) {
-  const nodePlugin = node({
-    customResolveOptions: {
-      moduleDirectory: 'node_modules'
-    }
-  });
+  const nodePlugin = [resolve(), commonjs()];
   const tsPlugin = typescript({
-    tsconfig: false
+    declaration: false,
+    emitDeclarationOnly: false
   });
+
   return Object.assign({
-    input: 'src/index.ts',
-    plugins: [nodePlugin, tsPlugin].concat(plugins)
+    input: "src/index.ts",
+    plugins: [nodePlugin, tsPlugin, cssPlugin].concat(plugins)
   }, config);
 }
 
 function getConfig(env) {
-  
   const babelPlugin = babel({
-    exclude: 'node_modules/**' // 只编译我们的源代码
-  })
-  const umdCfg = createConfig({
-    output: {
-      file: 'lib/index.js',
-      format: 'cjs'
-    },
-    watch: {
-      include: 'src/**'
-    }
-  }, [babelPlugin]);
+    exclude: "node_modules/**", // 只编译我们的源代码
+  });
   const esCfg = createConfig({
     output: {
-      file: 'lib/index.es.js',
-      format: 'es'
-    }
+      file: pkg.module,
+      format: "es",
+    },
   });
-  const umdMinCfg = createConfig({
-    output: {
-      file: 'lib/index.min.js',
-      name: 'EsUtil',
-      format: 'umd'
-    }
-  }, [babelPlugin, uglify()]);
-  return env === 'development' ? umdCfg : [umdCfg, esCfg, umdMinCfg];
+  if (env === "development") return esCfg
+  const cjsCfg = createConfig(
+    {
+      output: {
+        file: pkg.main,
+        format: "cjs",
+        exports: "named",
+      },
+      watch: {
+        include: "src/**",
+      },
+    },
+    [babelPlugin]
+  );
+
+  const umdMinCfg = createConfig(
+    {
+      output: {
+        file: pkg.unpkg,
+        name: "Smartfetch",
+        format: "umd",
+        exports: "named",
+      },
+    },
+    [babelPlugin, terser()]
+  );
+  return [cjsCfg, esCfg, umdMinCfg];
 }
-export default getConfig(process.env.NODE_ENV)
+
+export default getConfig(process.env.NODE_ENV);

@@ -3,6 +3,18 @@
     "noImplicitAny": true,
     "declaration": true,
     "declarationDir": "types",
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "importHelpers": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noImplicitThis": true,
+    "lib": ["esnext"],
+    // "types": ["mocha", "node"]
   }
 }
