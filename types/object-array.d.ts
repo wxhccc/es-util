@@ -29,5 +29,5 @@ export declare function checkoutBy(object: Obj, keys?: string[] | Obj, mergeFn?:
  */
 export declare function pickRenameKeys(object: Obj, keysMap: {
     [key: string]: string;
-}): Obj;
+}): Obj | undefined;
 export {};

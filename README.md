@@ -399,47 +399,13 @@ byteStringify(1234, { detail: true, standard: 'metric', precision: 3 })
 
 ```
 
-### `camelize(string)`
+> these methods remove from v1.2.0  you can use lodash instead
+### ~~`camelize(string)`~~
 
-camelize string
+### ~~`hyphenate(string)`~~
 
-**parameters:**
-- **string**            {String}    The string need to camelize.
+### ~~`camel2snake(string)`~~
 
-**returns**: string
-
-### `hyphenate(string)`
-
-hyphenate string
-
-**parameters:**
-- **string**            {String}    The string need to hyphenate.
-
-**returns**: string
-
-### `camel2snake(string)`
-
-switch camelize string to snake style(`_`)
-
-**parameters:**
-- **string**            {String}    The string need to switch.
-
-**returns**: string
-
-Example
-
-```javascript
-import { camelize, hyphenate, camel2snake } from 'es-util'
-
-camelize('aa-bb-cc')
-camelize('aa_bb_cc')
-/*log 'aaBbCc' */
-hyphenate('aaBbCc')
-/*log 'aa-bb-cc' */
-camel2snake('aaBbCc')
-/*log 'aa_bb_cc'*/
-
-```
 
 ## License
 MIT

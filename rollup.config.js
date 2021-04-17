@@ -1,20 +1,24 @@
 import resolve from "@rollup/plugin-node-resolve";
 import babel from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
-import typescript from '@rollup/plugin-typescript';
+import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 import pkg from "./package.json";
 
 function createConfig(config, plugins) {
   const nodePlugin = [resolve(), commonjs()];
   const tsPlugin = typescript({
-    declaration: false,
-    emitDeclarationOnly: false
+    tsconfigOverride: {
+      compilerOptions: {
+        declaration: false,
+        emitDeclarationOnly: false,
+      },
+    },
   });
 
   return Object.assign({
     input: "src/index.ts",
-    plugins: [nodePlugin, tsPlugin, cssPlugin].concat(plugins)
+    plugins: [nodePlugin, tsPlugin].concat(plugins)
   }, config);
 }
 

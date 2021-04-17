@@ -7,6 +7,6 @@ interface Options {
 export declare function byteStringify(byteNum: number | string, options?: Options): string | {
     value: string | number;
     unit: string;
-};
+} | undefined;
 export declare function byteParse(byteStr: string, options?: {}): void;
 export {};

@@ -1,5 +1,5 @@
 const assert = require('assert')
-const esUtil = require('../lib/index')
+const esUtil = require('../dist/index')
 
 describe('#array-tree-switch', function () {
   describe('#array2tree', function () {
@@ -47,23 +47,23 @@ describe('#validate', function () {
   describe('#ChinaIdCardValid', function () {
     const { ChinaIdCardValid } = esUtil
     it('should return `true` if the chinese IDcard is valid', function () {
-      assert.equal(ChinaIdCardValid('110101199003071532'), true)
+      assert.strictEqual(ChinaIdCardValid('110101199003071532'), true)
     })
     it('should return `false` if the chinese IDcard is invalid', function () {
-      assert.equal(ChinaIdCardValid('110101199003071533'), false)
+      assert.strictEqual(ChinaIdCardValid('110101199003071533'), false)
     })
   })
 
   describe('#formulaValidate', function () {
     const { formulaValidate } = esUtil
     it('should return `true` if the formula string is valid', function () {
-      assert.equal(formulaValidate('A+B-D*(A/E)'), true)
+      assert.strictEqual(formulaValidate('A+B-D*(A/E)'), true)
     })
     it('should return `false` if the formula string is invalid', function () {
-      assert.equal(formulaValidate('A+B-*D*(A/E)'), false)
+      assert.strictEqual(formulaValidate('A+B-*D*(A/E)'), false)
     })
     it('should return `false` if the formula string contain variable not in offered variables', function () {
-      assert.equal(formulaValidate('A+B-*D*(A/E)', ['A', 'B']), false)
+      assert.strictEqual(formulaValidate('A+B-*D*(A/E)', ['A', 'B']), false)
     })
   })
 })
@@ -117,13 +117,13 @@ describe('#value-string-switch', function () {
     describe('#byteStringify', function () {
       const { byteStringify } = esUtil
       it('should return `1.2 KB` if run byteStringify(1234)', function () {
-        assert.equal(byteStringify(1234), '1.2 KB')
+        assert.strictEqual(byteStringify(1234), '1.2 KB')
       })
       it('should return `-1.20 KB` if run byteStringify(-1234, { precision: 2 })', function () {
-        assert.equal(byteStringify(-1234, { precision: 2 }), '-1.21 KB')
+        assert.strictEqual(byteStringify(-1234, { precision: 2 }), '-1.21 KB')
       })
       it('should return `0.001 MB` if run byteStringify(1234, { unitLvl: \'M\', precision: 3 })', function () {
-        assert.equal(byteStringify(1234, { unitLvl: 'M', precision: 3 }), '0.001 MB')
+        assert.strictEqual(byteStringify(1234, { unitLvl: 'M', precision: 3 }), '0.001 MB')
       })
       it('should return an object `{ value: \'1.234\', unit: \'KB\'}` if run byteStringify(1234, { detail: true, standard: \'metric\', precision: 3 })', function () {
         assert.deepStrictEqual(byteStringify(1234, { detail: true, standard: 'metric', precision: 3 }), { value: '1.234', unit: 'kB' })
@@ -133,30 +133,17 @@ describe('#value-string-switch', function () {
     
   })
 
-  describe('#case-switch', function () {
-    describe('#camelize', function () {
-      const { camelize } = esUtil
-      it('should return `aaaBbbCcc` if run camelize(\'aaa_bbb_ccc\')', function () {
-        assert.equal(camelize('aaa_bbb_ccc'), 'aaaBbbCcc')
+  describe('#tools', function () {
+    describe('#awaitWrapper', function () {
+      const { awaitWrapper } = esUtil
+      it('should return [null, data] when promise resolved', async function () {
+        const result = await awaitWrapper(Promise.resolve(1));
+        assert.deepStrictEqual(result, [null, 1])
       })
-      it('should return `aaaBbbCcc` if run camelize(\'aaa-bbb-ccc\')', function () {
-        assert.equal(camelize('aaa-bbb-ccc'), 'aaaBbbCcc')
-      })
-      it('should return `aaaBbbCcc` if run camelize(\'aaa_bbb-ccc\')', function () {
-        assert.equal(camelize('aaa_bbb-ccc'), 'aaaBbbCcc')
-      })
-    })
-    describe('#hyphenate', function () {
-      const { hyphenate } = esUtil
-      it('should return `aaa-bbb-ccc` if run hyphenate(\'aaaBbbCcc\')', function () {
-        assert.equal(hyphenate('aaaBbbCcc'), 'aaa-bbb-ccc')
-      })
-    })
-    describe('#camel2snake', function () {
-      const { camel2snake } = esUtil
-      it('should return `aaa_bbb_ccc` if run camel2snake(\'aaaBbbCcc\')', function () {
-        assert.equal(camel2snake('aaaBbbCcc'), 'aaa_bbb_ccc')
-      })
+      it('should return [err, undefined] when promise reject or has error', async function() {
+        const result = await awaitWrapper(Promise.reject(1));
+        assert.deepStrictEqual(result, [1, undefined])
+      });
     })
 
   })

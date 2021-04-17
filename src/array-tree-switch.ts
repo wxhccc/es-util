@@ -91,7 +91,7 @@ export function tree2array (tree: Tree, options = {} as NodeOptions) {
   }, options);
   let nodes = returnObject ? {} as NodeMap : [] as Nodes;
   if (!Array.isArray(tree) && typeof tree !== 'object') return nodes;
-  function getNode (node: TreeNode, parentId: string | number, root = false) {
+  function getNode (node: TreeNode, parentId: string | number | null, root = false) {
     let baseNode: Node = hasParentKey ? {} : { [pid]: parentId };
     if (!root) {
       const newNode = Object.assign(baseNode, nodeChildFilter(node, children));
