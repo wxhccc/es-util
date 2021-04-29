@@ -9,12 +9,13 @@ export const objType = (val: unknown) => {
  * @param promise promise
  * @returns Promise<[K, undefined] | [null, T]>
  */
-export async function awaitWrapper<T, K = Error> (promise: Promise<T>): Promise<[K, undefined] | [null, T]> {
+type WarpperReturn<T, K> = [null, T] | [K, undefined]
+export async function awaitWrapper<T, K = Error, P = Promise<WarpperReturn<T, K>>> (promise: Promise<T>) {
   try {
     const data: T = await promise;
-    return [null, data];
+    return [null, data] as [null, T];
   } catch (err) {
-    return [err as K, undefined];
+    return [err as K, undefined] as [K, undefined];
   }
 }
 
@@ -22,12 +23,12 @@ export type SyncRefHandle = [Record<string, boolean>, string]
 export type LockSwitchHook = (val: boolean) => unknown
 
 export interface LockMethod<T> {
-  (key: string): PromiseWithLock<T>
-  (syncRefHandle: SyncRefHandle): PromiseWithLock<T>
+  (key: string): Promise<T>
+  (syncRefHandle: SyncRefHandle): Promise<T>
   (
     switchHook: LockSwitchHook,
     syncRefHandle?: [Record<string, boolean>, string]
-  ): PromiseWithLock<T>
+  ): Promise<T>
 }
 
 export interface PromiseWithLock<T> extends Promise<T> {
@@ -51,9 +52,11 @@ function checkContext(context?: any): ContextType {
  * @param wrap whether use awaitWrap to wrap result
  */
 const lockCtx = {}
+
 export function wpl<T>(this: any, promise: Promise<T>, wrap?: boolean) {
 
   const contextType = checkContext(this)
+  console.log(contextType)
   const isReactiveIns = contextType !== 'unknown'
   const context = isReactiveIns ? this : lockCtx
   const stateKey = isReactiveIns ? contextType === 'react' ? 'state' : '' : '$_ES_UTILS_KEYS'
@@ -99,7 +102,8 @@ export function wpl<T>(this: any, promise: Promise<T>, wrap?: boolean) {
   let lockRefHandle: SyncRefHandle
   let lockKey: string[] = []
 
-  const proxyPromise: PromiseWithLock<T> = Object.assign(promise, {
+  const corePromsie = wrap ? awaitWrapper(promise) : promise
+  const proxyPromise: PromiseWithLock<T | [null, T] | [Error, undefined]> = Object.assign(corePromsie, {
     lock: <HT extends LockSwitchHook>(
       keyOrHookOrHandle: string | HT | SyncRefHandle,
       syncRefHandle?: SyncRefHandle
@@ -116,10 +120,11 @@ export function wpl<T>(this: any, promise: Promise<T>, wrap?: boolean) {
           lockRefHandle = syncRefHandle
         }
       }
-      return proxyPromise
+      stateLock(true)
+      return promise
     }
   })
-  stateLock(true)
+  
   proxyPromise.finally(() => stateLock(false))
-  return wrap ? proxyPromise : awaitWrapper(proxyPromise)
+  return proxyPromise
 }

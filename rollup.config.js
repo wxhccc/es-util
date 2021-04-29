@@ -12,14 +12,15 @@ const banner = `/*!
   * @license MIT
   */`
 
+let tsChecked = true
+
 function createConfig(output, plugins = [], input) {
   const tsPlugin = typescript({
     tsconfigOverride: {
-      compilerOptions: {
-        declaration: false,
-        emitDeclarationOnly: false,
-      },
+      declaration: tsChecked,
+      emitDeclarationOnly: false
     },
+    useTsconfigDeclarationDir: true
   });
   return  {
     input: input || "src/index.ts",
