@@ -17,5 +17,5 @@ export interface PromiseWithLock<T> extends Promise<T> {
     lock: LockMethod<T>;
 }
 export declare type ContextType = 'react' | 'vue' | 'unknown';
-export declare function wpl<T>(this: any, promise: Promise<T>, wrap?: boolean): PromiseWithLock<T | [null, T] | [Error, undefined]>;
+export declare function wp<T>(this: any, promise: Promise<T>, wrap?: boolean): PromiseWithLock<T | [null, T] | [Error, undefined]>;
 export {};

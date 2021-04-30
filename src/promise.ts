@@ -53,7 +53,7 @@ function checkContext(context?: any): ContextType {
  */
 const lockCtx = {}
 
-export function wpl<T>(this: any, promise: Promise<T>, wrap?: boolean) {
+export function wp<T>(this: any, promise: Promise<T>, wrap?: boolean) {
 
   const contextType = checkContext(this)
   console.log(contextType)
@@ -103,7 +103,7 @@ export function wpl<T>(this: any, promise: Promise<T>, wrap?: boolean) {
   let lockKey: string[] = []
 
   const corePromsie = wrap ? awaitWrapper(promise) : promise
-  const proxyPromise: PromiseWithLock<T | [null, T] | [Error, undefined]> = Object.assign(corePromsie, {
+  Object.assign(corePromsie, {
     lock: <HT extends LockSwitchHook>(
       keyOrHookOrHandle: string | HT | SyncRefHandle,
       syncRefHandle?: SyncRefHandle
@@ -121,10 +121,10 @@ export function wpl<T>(this: any, promise: Promise<T>, wrap?: boolean) {
         }
       }
       stateLock(true)
-      return promise
+      return corePromsie
     }
   })
   
-  proxyPromise.finally(() => stateLock(false))
-  return proxyPromise
+  corePromsie.finally(() => stateLock(false))
+  return corePromsie as PromiseWithLock<T | [null, T] | [Error, undefined]>
 }

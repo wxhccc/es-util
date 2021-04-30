@@ -1,5 +1,5 @@
 const assert = require('assert')
-const esUtil = require('../dist/index')
+const esUtil = require('../')
 
 describe('#array-tree-switch', function () {
   describe('#array2tree', function () {
@@ -133,10 +133,22 @@ describe('#value-string-switch', function () {
     
   })
 
-  describe('#tools', function () {
+  describe('#promise', function () {
     describe('#awaitWrapper', function () {
       const { awaitWrapper } = esUtil
       it('should return [null, data] when promise resolved', async function () {
+        const result = await awaitWrapper(Promise.resolve(1));
+        assert.deepStrictEqual(result, [null, 1])
+      })
+      it('should return [err, undefined] when promise reject or has error', async function() {
+        const result = await awaitWrapper(Promise.reject(1));
+        assert.deepStrictEqual(result, [1, undefined])
+      });
+    })
+
+    describe('#wp', function () {
+      const { wp } = esUtil
+      it('should lock give when promise resolved', async function () {
         const result = await awaitWrapper(Promise.resolve(1));
         assert.deepStrictEqual(result, [null, 1])
       })
