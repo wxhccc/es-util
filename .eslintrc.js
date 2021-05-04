@@ -5,12 +5,25 @@ module.exports = {
     es6: true,
     node: true
   },
-  extends: [
-    'plugin:@typescript-eslint/recommended'
-  ],
   plugins: ['@typescript-eslint'],
   parserOptions: {
     sourceType: 'module',
     ecmaVersion: 2018
+  },
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended'
+  ],
+  rules: {
+    '@typescript-eslint/explicit-module-boundary-types': 0,
+    'prettier/prettier': [
+      'error',
+      {
+        semi: false,
+        singleQuote: true,
+        trailingComma: 'none',
+        proseWrap: 'never'
+      }
+    ]
   }
 }

@@ -9,8 +9,7 @@ export const objType = (val: unknown) => {
  * @param promise promise
  * @returns Promise<[K, undefined] | [null, T]>
  */
-type WarpperReturn<T, K> = [null, T] | [K, undefined]
-export async function awaitWrapper<T, K = Error, P = Promise<WarpperReturn<T, K>>> (promise: Promise<T>) {
+export async function awaitWrapper<T, K = Error> (promise: Promise<T>) {
   try {
     const data: T = await promise;
     return [null, data] as [null, T];
@@ -32,6 +31,7 @@ export interface LockMethod<T> {
 }
 
 export interface PromiseWithLock<T> extends Promise<T> {
+  readonly __lockValue: boolean
   lock: LockMethod<T>
 }
 
@@ -53,17 +53,16 @@ function checkContext(context?: any): ContextType {
  */
 const lockCtx = {}
 
-export function wp<T>(this: any, promise: Promise<T>, wrap?: boolean) {
+export function wp<T>(this: any, promise: Promise<T> | (() => Promise<T>), wrap?: boolean) {
 
   const contextType = checkContext(this)
-  console.log(contextType)
   const isReactiveIns = contextType !== 'unknown'
   const context = isReactiveIns ? this : lockCtx
-  const stateKey = isReactiveIns ? contextType === 'react' ? 'state' : '' : '$_ES_UTILS_KEYS'
+  const stateKey = contextType === 'react' ? 'state' : ''
   const contextState = stateKey ? context[stateKey] : context
 
-  const has = (val: unknown, key: string) => hasOwnProperty.call(val, key)
-  const isObj = (obj: unknown) => toString.call(obj) === '[object Object]'
+  const has = (val: unknown, key: string) => !!val && hasOwnProperty.call(val, key)
+  const isObj = (obj: unknown) => objType(obj) === 'Object'
 
   const setValue = <T>(obj: any, path: string[], value: T) => {
     // if vue2 and path[0] not defined, do nothing
@@ -76,7 +75,7 @@ export function wp<T>(this: any, promise: Promise<T>, wrap?: boolean) {
     let canSet = false
     for (let i = 0; i < path.length; i++) {
       const key = path[i]
-      const keyExist = hasOwnProperty.call(curObj, key)
+      const keyExist = has(curObj, key)
       if (i === path.length - 1) {
         const isBool = typeof curObj[key] === 'boolean'
         canSet = !keyExist || isBool
@@ -92,39 +91,78 @@ export function wp<T>(this: any, promise: Promise<T>, wrap?: boolean) {
     isStateRect && canSet && context.setState({ [path[0]]: originObj[path[0]] })
   }
 
+  const getValue = (obj: any, path: string[]) => {
+    // use refHandle if contextState not update sync
+    if (lockRefHandle) return lockRefHandle[0][lockRefHandle[1]]
+    let result = false
+    if (obj && isObj(obj) && Array.isArray(path)) {
+      let curObj = obj
+      for (let i = 0; i < path.length; i++) {
+        const key = path[i]
+        if (typeof curObj !== 'object' || !has(curObj, key)) {
+          break
+        }
+        curObj = curObj[key]
+        i === path.length - 1 &&
+          (result = typeof curObj === 'boolean' ? curObj : false)
+      }
+    }
+    return result
+  }
+
   const stateLock = (bool: boolean) => {
     if (lockKey.length) return setValue<boolean>(contextState, lockKey, bool)
     if (lockRefHandle) lockRefHandle[0][lockRefHandle[1]] = bool
     if (lockSwitchHook) lockSwitchHook(bool)
   }
 
+  const checkLock = () => getValue(contextState, lockKey)
+
   let lockSwitchHook: LockSwitchHook
   let lockRefHandle: SyncRefHandle
   let lockKey: string[] = []
-
-  const corePromsie = wrap ? awaitWrapper(promise) : promise
-  Object.assign(corePromsie, {
-    lock: <HT extends LockSwitchHook>(
-      keyOrHookOrHandle: string | HT | SyncRefHandle,
-      syncRefHandle?: SyncRefHandle
-    ) => {
-      const isRefHandle = (val: unknown): val is SyncRefHandle =>
-        Array.isArray(val) && val.length === 2
-      if (typeof keyOrHookOrHandle === 'string') {
-        lockKey = keyOrHookOrHandle.split('.')
-      } else if (isRefHandle(keyOrHookOrHandle)) {
-        lockRefHandle = keyOrHookOrHandle
-      } else if (typeof keyOrHookOrHandle === 'function') {
-        lockSwitchHook = keyOrHookOrHandle
-        if (isRefHandle(syncRefHandle)) {
-          lockRefHandle = syncRefHandle
+  let corePromsie: Promise<T> | Promise<[null, T] | [Error, undefined]>
+  if (typeof promise === 'function') {
+    if (checkLock()) return;
+    corePromsie = wrap ? awaitWrapper<T>(promise()) : promise()
+  } else {
+    corePromsie = wrap ? awaitWrapper<T>(promise) : promise
+  }
+  Object.defineProperties(corePromsie, {
+    __lockValue: { get: checkLock },
+    lock: {
+      value: <HT extends LockSwitchHook>(
+        keyOrHookOrHandle: string | HT | SyncRefHandle,
+        syncRefHandle?: SyncRefHandle
+      ) => {
+        const isRefHandle = (val: unknown): val is SyncRefHandle =>
+          Array.isArray(val) && val.length === 2
+        if (typeof keyOrHookOrHandle === 'string') {
+          lockKey = keyOrHookOrHandle.split('.')
+        } else if (isRefHandle(keyOrHookOrHandle)) {
+          lockRefHandle = keyOrHookOrHandle
+        } else if (typeof keyOrHookOrHandle === 'function') {
+          lockSwitchHook = keyOrHookOrHandle
+          if (isRefHandle(syncRefHandle)) {
+            lockRefHandle = syncRefHandle
+          }
         }
+        stateLock(true)
+        return corePromsie
       }
-      stateLock(true)
-      return corePromsie
     }
-  })
+  });
   
   corePromsie.finally(() => stateLock(false))
   return corePromsie as PromiseWithLock<T | [null, T] | [Error, undefined]>
+}
+
+export const wpVuePlugin = {
+  install(appOrVue: any) {
+    if (appOrVue.config && 'globalProperties' in appOrVue.config) {
+      appOrVue.config.globalProperties.$wp = wp
+    } else {
+      appOrVue.prototype.$wp = wp
+    }
+  }
 }

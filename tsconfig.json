@@ -15,6 +15,6 @@
     "esModuleInterop": true,
     "noImplicitThis": true,
     "lib": ["esnext"],
-    "types": ["mocha", "node"]
+    "types": ["jest", "node"]
   }
 }
