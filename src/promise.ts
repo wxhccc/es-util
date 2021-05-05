@@ -121,10 +121,9 @@ export function wp<T>(this: any, promise: Promise<T> | (() => Promise<T>), wrap?
   let lockSwitchHook: LockSwitchHook
   let lockRefHandle: SyncRefHandle
   let lockKey: string[] = []
-  let corePromsie: Promise<T> | Promise<[null, T] | [Error, undefined]>
+  let corePromsie: Promise<T | undefined> | Promise<[null, T] | [Error, undefined]>
   if (typeof promise === 'function') {
-    if (checkLock()) return;
-    corePromsie = wrap ? awaitWrapper<T>(promise()) : promise()
+    corePromsie = checkLock() ? Promise.reject<T>(new Error('you can\'t recall promise method when it\'s locking')).catch(() => undefined) : wrap ? awaitWrapper<T>(promise()) : promise()
   } else {
     corePromsie = wrap ? awaitWrapper<T>(promise) : promise
   }
