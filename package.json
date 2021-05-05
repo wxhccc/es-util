@@ -7,11 +7,10 @@
   "unpkg": "dist/index.min.js",
   "types": "types/index.d.ts",
   "scripts": {
+    "start": "npm run dev",
     "test": "jest",
     "dev": "rollup -w -c --environment NODE_ENV:development",
-    "build": "rollup -c && npm run build:types",
-    "build:types": "tsc",
-    "start": "npm run dev"
+    "build": "rollup -c"
   },
   "keywords": [
     "array-tree-switch",
@@ -41,6 +40,7 @@
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
+    "@types/jest": "^26.0.23",
     "@types/mocha": "^8.2.2",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
     "@typescript-eslint/parser": "^2.19.0",

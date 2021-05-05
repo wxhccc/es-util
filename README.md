@@ -407,5 +407,38 @@ byteStringify(1234, { detail: true, standard: 'metric', precision: 3 })
 ### ~~`camel2snake(string)`~~
 
 
+
+## promise module
+
+### `awaitWrapper(promise)`
+
+wrap promise with then and catch to return `[null, data]` or `[Error, undefined]`, useful async & await
+
+### `wp(promise, [wrap])`
+
+wrap promise or a function return promise with lock method to control UI or forbiden multi task at same time
+
+**parameters:**
+- **promise**    {Promise|() => Promise}    promise object or a function return promise object. when use function and lock, it can prevent second call before previous promise settled
+- **wrap**    {boolean}    whether use `awaitWrapper` to wrap then promise.
+
+**returns**: a extends promise object with `lock` method and `__lockValue` getter
+
+#### methods of return
+
+##### `lock(promise, [wrap])`
+
+a method to lock same task promise or other things before promise settled. 
+
+> can be use in react and vue2/3 instance when bind this
+
+**parameters:**
+- **keyOrHookOrHandle**    {string|(bool) => void|[ref, lockKey]}    
+  string:  property(support nested) used to lock. useful in vue instance and React Class component
+  function: useful in ReactHook component, pass setXXX to method
+  syncRefHandle: an array such as `[object, keyOfObject]` useful when need to lock promise when value can't be update sync, such as React
+- **syncRefHandle**    {[ref, lockKey]}  when you need function and syncRefHandle at sametime
+
+
 ## License
 MIT
