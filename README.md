@@ -429,10 +429,15 @@ wrap promise or a function return promise with lock method to control UI or forb
 
     syncRefHandle: an array such as `[object, keyOfObject]` useful when need to lock promise when value can't be update sync, such as React
   - **syncRefHandle**    {[ref, lockKey]}  when you need function and syncRefHandle at sametime
+  - **manualUnlock**    {boolean}  whether not unlock automatic
 
-**returns**: a extends promise object with `__lockValue` getter
+**returns**: a extends promise object with `__lockValue` getter and `unlock` method
 
 > can be use in react and vue2/3 instance when bind this
+
+### `wpVuePlugin`
+
+an plugin object for vue
 
 ## License
 MIT

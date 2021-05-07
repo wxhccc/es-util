@@ -14,14 +14,17 @@ const banner = `/*!
 
 let tsChecked = true
 
-function createConfig(output, plugins = [], input) {
-  const tsPlugin = typescript({
+function createConfig(output, plugins = [], input, tsOptions) {
+  const tsOpts = tsOptions || {
     tsconfigOverride: {
       declaration: tsChecked,
       emitDeclarationOnly: false
     },
     useTsconfigDeclarationDir: true
-  });
+  }
+  const tsPlugin = typescript(tsOpts);
+
+  tsChecked && (tsChecked = false)
   return  {
     input: input || "src/index.ts",
     output: Array.isArray(output) ? output.map(cfg => Object.assign(cfg, { banner })) : {
@@ -50,6 +53,10 @@ function getConfig(env) {
       exports: "named"
     }
   ]
+  if (env === "development") return [
+    esConfig,
+    createConfig(babelOutput, [babelPlugin])
+  ]
   const umdOut = {
     file: pkg.unpkg,
     name: "Smartfetch",
@@ -57,31 +64,36 @@ function getConfig(env) {
     exports: "named",
     plugins: [terser()]
   }
-  if (env === "development") return [
-    esConfig,
-    createConfig(babelOutput, [babelPlugin])
-  ]
+  
   babelOutput.push(umdOut)
+  
   const singleFiles = {
     'value-string-switch': path.resolve(__dirname, 'src/value-string-switch/index.ts'),
     'object-array': path.resolve(__dirname, 'src/object-array.ts'),
     'promise': path.resolve(__dirname, 'src/promise.ts'),
     'validate': path.resolve(__dirname, 'src/validate.ts')
   }
-  const singleFileEsCfg = createConfig({
-    format: "es",
-    dir: path.resolve(__dirname, 'dist'),
-    entryFileNames: '[name].es.js'
-  }, [], singleFiles)
+  // const singleFileEsCfg = createConfig({
+  //   format: "es",
+  //   dir: path.resolve(__dirname, 'dist'),
+  //   entryFileNames: '[name].es.js'
+  // }, [], singleFiles)
+
   const singleFileCjsCfg = createConfig({
     format: "cjs",
     dir: path.resolve(__dirname, 'dist'),
     entryFileNames: '[name].js'
-  }, [babelPlugin], singleFiles)
+  }, [babelPlugin], singleFiles, {
+    tsconfigOverride: {
+      declaration: true,
+      emitDeclarationOnly: false
+    }
+  })
+
   return [
     esConfig,
     createConfig(babelOutput, [babelPlugin]),
-    singleFileEsCfg,
+    // singleFileEsCfg,
     singleFileCjsCfg
   ]
 }

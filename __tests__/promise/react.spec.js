@@ -24,11 +24,9 @@ class SubmitBtns extends React.Component {
   }
   onBtn1Click = () => {
     this.$wp(this.getData(), { lock: 'loading' })
-    console.log(this.state)
   }
   onBtn2Click = () => {
     this.$wp(this.getData, { lock: 'a.loading' })
-    console.log(this.state)
   }
   render() {
     return (
