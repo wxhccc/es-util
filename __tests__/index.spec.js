@@ -1,3 +1,4 @@
+/* eslint-env node, jest */
 import * as esUtil from '../'
 
 describe('#array-tree-switch', function () {
@@ -149,8 +150,8 @@ describe('#promise', function () {
   describe('#wp', function () {
     const { wp } = esUtil
     it('should lock inner value when run in global env', function () {
-      const promise = wp(Promise.resolve(1))
-      promise.lock('loading').finally(() => {
+      const promise = wp(Promise.resolve(1), { lock: 'loading' })
+      promise.finally(() => {
         expect(promise.__lockValue).toBe(false)
       });
       expect(promise.__lockValue).toBe(true)

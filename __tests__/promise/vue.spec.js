@@ -1,4 +1,4 @@
-/* eslint-env node, mocha */
+/* eslint-env node, jest */
 import { mount } from '@vue/test-utils'
 import { wp } from '../../'
 
@@ -18,14 +18,14 @@ const SubmitBtns = {
   methods: {
     getData() {
       return new Promise((resolve) => {
-        window.setTimeout(() => resolve(1), 300)
+        window.setTimeout(() => resolve(1), 200)
       })
     },
     async onBtn1Click() {
-      wp.call(this, this.getData()).lock('loading')
+      wp.call(this, this.getData(), { lock: 'loading' })
     },
     async onBtn2Click() {
-      wp.call(this, this.getData).lock('a.loading')
+      wp.call(this, this.getData, { lock: 'a.loading' })
     }
   }
 }

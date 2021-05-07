@@ -420,25 +420,19 @@ wrap promise or a function return promise with lock method to control UI or forb
 
 **parameters:**
 - **promise**    {Promise|() => Promise}    promise object or a function return promise object. when use function and lock, it can prevent second call before previous promise settled
-- **wrap**    {boolean}    whether use `awaitWrapper` to wrap then promise.
+- **wrapOrOptions**    {boolean|WrapOptions}    shortcut of `wrap` option or full options.
+  - **wrap**    {boolean} whether use `awaitWrapper` to wrap then promise.
+  - **lock**    {string|(bool) => void|[ref, lockKey]}    
+    string:  property(support nested) used to lock. useful in vue instance and React Class component
 
-**returns**: a extends promise object with `lock` method and `__lockValue` getter
+    function: useful in ReactHook component, pass setXXX to method
 
-#### methods of return
+    syncRefHandle: an array such as `[object, keyOfObject]` useful when need to lock promise when value can't be update sync, such as React
+  - **syncRefHandle**    {[ref, lockKey]}  when you need function and syncRefHandle at sametime
 
-##### `lock(promise, [wrap])`
-
-a method to lock same task promise or other things before promise settled. 
+**returns**: a extends promise object with `__lockValue` getter
 
 > can be use in react and vue2/3 instance when bind this
-
-**parameters:**
-- **keyOrHookOrHandle**    {string|(bool) => void|[ref, lockKey]}    
-  string:  property(support nested) used to lock. useful in vue instance and React Class component
-  function: useful in ReactHook component, pass setXXX to method
-  syncRefHandle: an array such as `[object, keyOfObject]` useful when need to lock promise when value can't be update sync, such as React
-- **syncRefHandle**    {[ref, lockKey]}  when you need function and syncRefHandle at sametime
-
 
 ## License
 MIT
