@@ -399,47 +399,45 @@ byteStringify(1234, { detail: true, standard: 'metric', precision: 3 })
 
 ```
 
-### `camelize(string)`
+> these methods remove from v1.2.0  you can use lodash instead
+### ~~`camelize(string)`~~
 
-camelize string
+### ~~`hyphenate(string)`~~
 
-**parameters:**
-- **string**            {String}    The string need to camelize.
+### ~~`camel2snake(string)`~~
 
-**returns**: string
 
-### `hyphenate(string)`
 
-hyphenate string
+## promise module
 
-**parameters:**
-- **string**            {String}    The string need to hyphenate.
+### `awaitWrapper(promise)`
 
-**returns**: string
+wrap promise with then and catch to return `[null, data]` or `[Error, undefined]`, useful async & await
 
-### `camel2snake(string)`
+### `wp(promise, [wrap])`
 
-switch camelize string to snake style(`_`)
+wrap promise or a function return promise with lock method to control UI or forbiden multi task at same time
 
 **parameters:**
-- **string**            {String}    The string need to switch.
+- **promise**    {Promise|() => Promise}    promise object or a function return promise object. when use function and lock, it can prevent second call before previous promise settled
+- **wrapOrOptions**    {boolean|WrapOptions}    shortcut of `wrap` option or full options.
+  - **wrap**    {boolean} whether use `awaitWrapper` to wrap then promise.
+  - **lock**    {string|(bool) => void|[ref, lockKey]}    
+    string:  property(support nested) used to lock. useful in vue instance and React Class component
 
-**returns**: string
+    function: useful in ReactHook component, pass setXXX to method
 
-Example
+    syncRefHandle: an array such as `[object, keyOfObject]` useful when need to lock promise when value can't be update sync, such as React
+  - **syncRefHandle**    {[ref, lockKey]}  when you need function and syncRefHandle at sametime
+  - **manualUnlock**    {boolean}  whether not unlock automatic
 
-```javascript
-import { camelize, hyphenate, camel2snake } from 'es-util'
+**returns**: a extends promise object with `__lockValue` getter and `unlock` method
 
-camelize('aa-bb-cc')
-camelize('aa_bb_cc')
-/*log 'aaBbCc' */
-hyphenate('aaBbCc')
-/*log 'aa-bb-cc' */
-camel2snake('aaBbCc')
-/*log 'aa_bb_cc'*/
+> can be use in react and vue2/3 instance when bind this
 
-```
+### `wpVuePlugin`
+
+an plugin object for vue
 
 ## License
 MIT

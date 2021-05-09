@@ -1,14 +1,16 @@
 {
   "name": "@wxhccc/es-util",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "description": "A library that contains some useful methods",
-  "main": "lib/index.js",
-  "module": "lib/index.es.js",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "unpkg": "dist/index.min.js",
+  "types": "types/index.d.ts",
   "scripts": {
-    "test": "mocha",
+    "start": "npm run dev",
+    "test": "jest",
     "dev": "rollup -w -c --environment NODE_ENV:development",
-    "build": "rollup -c",
-    "start": "npm run dev"
+    "build": "rollup -c"
   },
   "keywords": [
     "array-tree-switch",
@@ -19,8 +21,7 @@
     "idCard",
     "validate",
     "mapToObject",
-    "string-switch",
-    "camelize,hyphenate,camel2snake"
+    "string-switch"
   ],
   "author": "wxhccc",
   "license": "MIT",
@@ -35,14 +36,32 @@
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.13.13",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^18.0.0",
+    "@rollup/plugin-node-resolve": "^11.2.1",
+    "@types/jest": "^26.0.23",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "@vue/test-utils": "^2.0.0-rc.6",
     "babel-eslint": "^8.2.6",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "eslint": "^4.19.1",
-    "lodash": "^4.17.11",
-    "mocha": "^6.0.2",
-    "rollup": "^1.2.2",
-    "rollup-plugin-babel": "^4.3.2",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "rollup-plugin-uglify": "^6.0.2"
+    "jest": "^26.6.3",
+    "lodash": "^4.17.15",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rollup": "^2.45.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "tslib": "^1.10.0",
+    "typescript": "^4.2.4",
+    "vue": "^3.0.11"
   },
+  "files": [
+    "dist",
+    "types"
+  ],
   "dependencies": {}
 }
