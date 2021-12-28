@@ -196,7 +196,9 @@ function wrapPromise<T>(this: any, promise: WpPromise<T>, wrapOrOptions?: boolea
   return corePromsie as PromiseWithLock<T>
 }
 
-export const wp = wrapPromise
+type WP = typeof wrapPromise & { _checkLockKey: (key: string) => boolean }
+
+export const wp = Object.defineProperty(wrapPromise, '_checkLockKey', { value: (key: string) => lockCtx[key] }) as WP
 
 export const wpVuePlugin = {
   install(appOrVue: any, key = '$wp') {
