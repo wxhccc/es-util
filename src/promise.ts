@@ -68,11 +68,15 @@ const emptyPromise = () => {
 }
 const lockCtx: Record<string, boolean> = {}
 
-type WpReturn<T> = PromiseWithLock<T | undefined | [null, T] | [Error, undefined]>
+
+type WpReturn<T> = PromiseWithLock<T | undefined>
+type WpArrReturn<T> = PromiseWithLock<[null, T] | [Error, undefined]>
 type WpPromise<T> = Promise<T> | (() => Promise<T>)
 
-function wrapPromise<T>(this: any, promise: WpPromise<T>, wrap?: boolean): WpReturn<T>
-function wrapPromise<T>(this: any, promise: WpPromise<T>, options?: WpOptions): WpReturn<T>
+function wrapPromise<T>(this: any, promise: WpPromise<T>, wrap?: false): WpReturn<T>
+function wrapPromise<T>(this: any, promise: WpPromise<T>, wrap: true): WpArrReturn<T>
+function wrapPromise<T>(this: any, promise: WpPromise<T>, options?: WpOptions & { wrap?: false }): WpReturn<T>
+function wrapPromise<T>(this: any, promise: WpPromise<T>, options?: WpOptions & { wrap: true }): WpArrReturn<T>
 function wrapPromise<T>(this: any, promise: WpPromise<T>, wrapOrOptions?: boolean | WpOptions) {
   const contextType = checkContext(this)
   const isReactiveIns = contextType !== 'unknown'
@@ -180,6 +184,7 @@ function wrapPromise<T>(this: any, promise: WpPromise<T>, wrapOrOptions?: boolea
 
   Object.defineProperties(corePromsie, {
     '__lockValue': { get: checkLock },
+    _checkLockKey: { value: (key: string) => lockCtx[key] },
     unlock: { value: unlock }
   })
  
@@ -198,9 +203,9 @@ export const wp = Object.defineProperty(wrapPromise, '_checkLockKey', { value: (
 export const wpVuePlugin = {
   install(appOrVue: any, key = '$wp') {
     if (appOrVue.config && 'globalProperties' in appOrVue.config) {
-      appOrVue.config.globalProperties[key] = wp
+      appOrVue.config.globalProperties[key] = wrapPromise
     } else {
-      appOrVue.prototype[key] = wp
+      appOrVue.prototype[key] = wrapPromise
     }
   }
 }
