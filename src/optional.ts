@@ -67,18 +67,22 @@ export type ParamsSwitchMaps<DK extends string = string, RK extends string = str
    DK,
    [RK, RK] | [RK, RK, string] | 'join' | 'pop'
  >
+export type DateFormat = (date: any, format?: string) => string
+
 /**
  * 将搜素条件里的数组字段转换为其他格式，通常用于搜索表单的字段转换
  * @param formData 传入参数
  * @param maps 转换的映射关系，eg：{ date: ['startTime', 'endTime'] }
- * @param filterNullableValue 是否需要过滤掉空数据项
+ * @param options 额外的配置参数
  */
-export const formParamsSwitch = <T extends AnyObject, R extends AnyObject = AnyObject>(
+export const formParamsSwitch = <R extends AnyObject = AnyObject, T extends AnyObject = AnyObject>(
   formData: T,
-  maps: ParamsSwitchMaps,
+  maps: Partial<ParamsSwitchMaps<Exclude<keyof T, number | symbol>, Exclude<keyof R, number | symbol>>>,
   options?: {
+    /** 是否需要过滤空数据 */
     filterNullable?: boolean
-    dateFormat?: (date: any, format?: string) => string
+    /** 时间格式换函数 */
+    dateFormat?: DateFormat
   }
 ) => {
   const dateKeys = Object.keys(maps)
@@ -99,10 +103,10 @@ export const formParamsSwitch = <T extends AnyObject, R extends AnyObject = AnyO
   const { filterNullable: filterNullableValue, dateFormat } = { filterNullable: true, ...options }
   const handleData = accessKeys.reduce((acc, key) => {
     const values = dateData[key]
-    if (!values) {
+    const mapValue = maps[key]
+    if (!values || !mapValue) {
       return acc
     }
-    const mapValue = maps[key]
     // 数组合并操作/取最后一位操作
     if (mapValue === 'join' || mapValue === 'pop') {
       if (Array.isArray(values) && values.length) {
@@ -121,9 +125,12 @@ export const formParamsSwitch = <T extends AnyObject, R extends AnyObject = AnyO
     }
     return acc
   }, {} as AnyObject)
-  const result = ({
+  const result = {
     ...restData,
     ...handleData
-  } as unknown) as R
+  } as R
   return filterNullableValue ? filterNullable(result) : result
 }
+
+/** 创建一个绑定了默认时间格式转换函数的formParamsSwitch函数 */
+export const formParamsSwitchCreator = (dateFormat: DateFormat): typeof formParamsSwitch => (formData, maps, options) => formParamsSwitch(formData, maps, { dateFormat, ...options })
