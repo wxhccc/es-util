@@ -77,8 +77,8 @@ export const formParamsSwitch = <T extends AnyObject, R extends AnyObject = AnyO
   formData: T,
   maps: ParamsSwitchMaps,
   options?: {
-    filterNullable: boolean
-    dateFormat: (date: unknown, format?: string) => string
+    filterNullable?: boolean
+    dateFormat?: (date: any, format?: string) => string
   }
 ) => {
   const dateKeys = Object.keys(maps)
