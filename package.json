@@ -21,7 +21,8 @@
     "idCard",
     "validate",
     "mapToObject",
-    "string-switch"
+    "string-switch",
+    "mask data"
   ],
   "author": "wxhccc",
   "license": "MIT",
