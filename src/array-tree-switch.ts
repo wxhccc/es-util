@@ -40,13 +40,14 @@ type Tree = TreeNode[] | { [children: string]: TreeNode[] }
  *  @param {boolean | string} parentRefKey  parent reference key of node
  */
 export function array2tree (array: Node[], options = {} as TreeOptions): Tree {
-  const { primaryKey: id, parentKey: pid, childrenKey: children, createRoot, parentRefKey } = Object.assign({
+  const { primaryKey: id, parentKey: pid, childrenKey: children, createRoot, parentRefKey } = {
     primaryKey: 'id',
     parentKey: 'pid',
     childrenKey: 'children',
     createRoot: false,
-    parentRefKey: false
-  }, options);
+    parentRefKey: false,
+    ...options
+  };
   const pRefKey = parentRefKey && (typeof parentRefKey === 'string' ? parentRefKey : '_parent');
   let nodeMap: { [id: string]: TreeNode } = {};
   let treeNodes: TreeNode[] = [];
@@ -55,7 +56,7 @@ export function array2tree (array: Node[], options = {} as TreeOptions): Tree {
     hasOwnProperty.call(nodeMap, item[pid]) && nodeMap[item[pid]][children].push(Object.assign(nodeMap[item[id]], pRefKey ? { [pRefKey]: nodeMap[item[pid]] } : {}));
     !item[pid] && treeNodes.push(nodeMap[item[id]]);
   });
-  if (typeof createRoot === 'function') {
+  if (createRoot instanceof Function) {
     return createRoot(treeNodes);
   } else if (createRoot) {
     return { [children]: treeNodes };

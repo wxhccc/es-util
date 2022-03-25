@@ -71,13 +71,10 @@ function getConfig(env) {
     'value-string-switch': path.resolve(__dirname, 'src/value-string-switch/index.ts'),
     'object-array': path.resolve(__dirname, 'src/object-array.ts'),
     'promise': path.resolve(__dirname, 'src/promise.ts'),
-    'validate': path.resolve(__dirname, 'src/validate.ts')
+    'validate': path.resolve(__dirname, 'src/validate.ts'),
+    'event-target-emitter': path.resolve(__dirname, 'src/event-target-emitter.ts'),
+    'page-communicate': path.resolve(__dirname, 'src/page-communicate.ts')
   }
-  // const singleFileEsCfg = createConfig({
-  //   format: "es",
-  //   dir: path.resolve(__dirname, 'dist'),
-  //   entryFileNames: '[name].es.js'
-  // }, [], singleFiles)
 
   const singleFileCjsCfg = createConfig({
     format: "cjs",
@@ -93,7 +90,6 @@ function getConfig(env) {
   return [
     esConfig,
     createConfig(babelOutput, [babelPlugin]),
-    // singleFileEsCfg,
     singleFileCjsCfg
   ]
 }
