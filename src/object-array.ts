@@ -1,4 +1,5 @@
-type Obj = { [key: string]: any };
+import { AnyObject } from './types'
+
 /**
  * translate object array to key-value map object
  * 
@@ -9,8 +10,8 @@ type Obj = { [key: string]: any };
 interface PropHandler {
   (item: any, index: number): string
 }
-export function mapToObject (objectArray: any[], keyProp: string | PropHandler = 'key', valueProp: string | PropHandler = 'value') {
-  let result: Obj = {};
+export function mapToObject (objectArray: AnyObject[], keyProp: string | PropHandler = 'key', valueProp: string | PropHandler = 'value') {
+  const result: Record<string, string | number> = {};
   Array.isArray(objectArray) && keyProp && valueProp
     && [keyProp, valueProp].every(val => ['string', 'function'].includes(typeof val)) 
     && objectArray.forEach((item, index) => {
@@ -21,6 +22,10 @@ export function mapToObject (objectArray: any[], keyProp: string | PropHandler =
   return result
 }
 
+
+type MergeFn = <T>(...args: T[]) => T
+
+const isObject = (obj: unknown): obj is AnyObject => Object.prototype.toString.call(obj) === '[object Object]'
 /**
  * checkout values form object as an array
  * 
@@ -28,17 +33,17 @@ export function mapToObject (objectArray: any[], keyProp: string | PropHandler =
  * @param {string[] | Object} keys
  * @param {string} valueProp
  */
-type MergeFn = <T>(...args: T[]) => T
-
-export function checkoutBy (object: Obj, keys?: string[] | Obj, mergeFn?: MergeFn) {
-  if (!(object instanceof Object)) return [];
+export function checkoutBy (object: AnyObject, keys?: string[] | AnyObject, mergeFn?: MergeFn) {
+  if (!isObject(object)) {
+    return [];
+  }
   if (Array.isArray(keys)) {
-    return keys.map(item => ((<Obj>object)[item]));
-  } else if (keys && keys instanceof Object) {
+    return keys.map(item => object[item]);
+  } else if (keys && isObject(keys)) {
     return Object.keys(keys).map(item => 
-      ((<Obj>object)[item] instanceof Object && (<Obj>keys)[item] instanceof Object)
-        ? (mergeFn ? mergeFn({}, (<Obj>object)[item], (<Obj>keys)[item]) : Object.assign({}, (<Obj>object)[item], (<Obj>keys)[item]))
-        : ((<Obj>keys)[item] || (<Obj>object)[item])
+      (isObject(object[item]) && isObject(keys[item]))
+        ? (mergeFn ? mergeFn({}, (object)[item], (keys)[item]) : Object.assign({}, object[item], keys[item]))
+        : (keys[item] || object[item])
     );
   }
   return Object.values(object);
@@ -50,11 +55,13 @@ export function checkoutBy (object: Obj, keys?: string[] | Obj, mergeFn?: MergeF
  * @param {Object} keysMap
  */
 
-export function pickRenameKeys (object: Obj, keysMap: { [key: string]: string }) {
-  if (!object || !(object instanceof Object) || !keysMap || !(keysMap instanceof Object)) return;
-  let result: Obj = {};
+export function pickRenameKeys (object: AnyObject, keysMap: { [key: string]: string }) {
+  if (!object || !isObject(object) || !keysMap || !isObject(keysMap)) {
+    return;
+  }
+  let result: AnyObject = {};
   for (let i in object) {
-    (i in keysMap) && (result[keysMap[i]] = (<Obj>object)[i]);
+    (i in keysMap) && (result[keysMap[i]] = object[i]);
   }
   return result;
 }

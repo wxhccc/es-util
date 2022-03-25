@@ -439,5 +439,27 @@ wrap promise or a function return promise with lock method to control UI or forb
 
 an plugin object for vue
 
+
+## event-target-emitter module
+
+> v1.7.0 add
+
+### `eventTargetEmitter(options)`
+
+return an emitter instance with `on`, `off` and some other methods to handle with EventTarget
+
+**parameters:**
+- **options**    {ConfigOptions}
+  - **name**    {string} the name of current emitter. can used to limit message received from
+  - **customHanlderCreator**    {(watchers) => Function}  custome handler creator, you can handle message distribute logic as you want.
+
+## event-target-emitter module
+
+> v1.7.0 add
+
+### `pageCommunicate(options)`
+
+return an instance which can used to communicate between same-origin pages, powered by `eventTargetEmitter`
+
 ## License
 MIT
