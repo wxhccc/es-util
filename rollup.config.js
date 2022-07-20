@@ -73,7 +73,8 @@ function getConfig(env) {
     'promise': path.resolve(__dirname, 'src/promise.ts'),
     'validate': path.resolve(__dirname, 'src/validate.ts'),
     'event-target-emitter': path.resolve(__dirname, 'src/event-target-emitter.ts'),
-    'page-communicate': path.resolve(__dirname, 'src/page-communicate.ts')
+    'page-communicate': path.resolve(__dirname, 'src/page-communicate.ts'),
+    'raf-timer': path.resolve(__dirname, 'src/raf-timer.ts')
   }
 
   const singleFileCjsCfg = createConfig({
