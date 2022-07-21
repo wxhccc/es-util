@@ -1,3 +1,5 @@
+import { objForEch } from "./utils"
+
 type AnyObject = Record<string | number, any>
 /**
  * JSON.parse string safely
@@ -30,8 +32,7 @@ export const isNullable = (value: unknown): value is '' | null | undefined =>
  */
  export const filterNullable = <T extends AnyObject>(obj: T, deep?: boolean) => {
   const result: Record<string, NonNullable<any>> = {}
-  Object.keys(obj).forEach(key => {
-    const value = obj[key]
+  objForEch(obj, (key, value) => {
     if (value !== '' && value !== undefined && value !== null) {
       result[key] = deep && Object.prototype.toString.call(value) === '[object Object]' ? filterNullable(value) : value
     }
@@ -52,8 +53,8 @@ export const switchNullToUndefined = (data: any): any => {
   if (Array.isArray(data)) {
     return data.map(switchNullToUndefined)
   } else if (toString.call(data) === '[object Object]') {
-    Object.keys(data).forEach((key: string) => {
-      data[key] = switchNullToUndefined(data[key])
+    objForEch(data, (value, key) => {
+      data[key] = switchNullToUndefined(value)
     })
   }
   return data
@@ -88,7 +89,7 @@ export const formParamsSwitch = <R extends AnyObject = AnyObject, T extends AnyO
   const dateKeys = Object.keys(maps)
   const dateData: AnyObject = {}
   const restData: AnyObject = {}
-  Object.keys(formData).forEach(key => {
+  objForEch(formData, (_v, key) => {
     if (dateKeys.includes(key)) {
       dateData[key] = formData[key]
     } else {

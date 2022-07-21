@@ -1,4 +1,5 @@
 import { AnyObject } from './types'
+import { objForEch } from './utils';
 
 /**
  * translate object array to key-value map object
@@ -38,12 +39,12 @@ export function checkoutBy (object: AnyObject, keys?: string[] | AnyObject, merg
     return [];
   }
   if (Array.isArray(keys)) {
-    return keys.map(item => object[item]);
+    return keys.map(key => object[key]);
   } else if (keys && isObject(keys)) {
-    return Object.keys(keys).map(item => 
-      (isObject(object[item]) && isObject(keys[item]))
-        ? (mergeFn ? mergeFn({}, (object)[item], (keys)[item]) : Object.assign({}, object[item], keys[item]))
-        : (keys[item] || object[item])
+    return objForEch(keys, (key, value) => 
+      (isObject(object[key]) && isObject(value))
+        ? (mergeFn ? mergeFn({}, (object)[key], (keys)[key]) : Object.assign({}, object[key], value))
+        : (value || object[key])
     );
   }
   return Object.values(object);

@@ -59,7 +59,7 @@ function getConfig(env) {
   ]
   const umdOut = {
     file: pkg.unpkg,
-    name: "Smartfetch",
+    name: "EsUtil",
     format: "umd",
     exports: "named",
     plugins: [terser()]
@@ -68,11 +68,13 @@ function getConfig(env) {
   babelOutput.push(umdOut)
   
   const singleFiles = {
+    'utils': path.resolve(__dirname, 'src/utils.ts'),
     'value-string-switch': path.resolve(__dirname, 'src/value-string-switch/index.ts'),
     'object-array': path.resolve(__dirname, 'src/object-array.ts'),
     'promise': path.resolve(__dirname, 'src/promise.ts'),
     'validate': path.resolve(__dirname, 'src/validate.ts'),
     'event-target-emitter': path.resolve(__dirname, 'src/event-target-emitter.ts'),
+    'optional': path.resolve(__dirname, 'src/optional.ts'),
     'page-communicate': path.resolve(__dirname, 'src/page-communicate.ts'),
     'raf-timer': path.resolve(__dirname, 'src/raf-timer.ts')
   }

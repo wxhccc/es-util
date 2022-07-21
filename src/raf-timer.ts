@@ -14,20 +14,11 @@ interface TaskItem {
 }
 export type TimerCallback = TaskItem['callback']
 
-// /** 计时器实例 */
-// export interface TimerInstance {
-//   start: () => void
-//   stop: () => void
-//   pauseToggle: () => void
-//   addTask: (callback: TaskItem['callback'], interval: number, maxTime?: number) => void
-//   removeTask: (callback: TaskItem['callback']) => void
-// }
-
 /**
  * 创建一个计时器
  * @returns 
  */
-export const createTimer = () => {
+export const createRAFTimer = () => {
   // 计时器句柄
   let ticker = 0
   // 是否暂停状态
@@ -106,4 +97,5 @@ export const createTimer = () => {
   return { start, stop, pauseToggle, addTask, removeTask }
 }
 
-export type TimerInstance = ReturnType<typeof createTimer>
+/** 计时器实例 */
+export type TimerInstance = ReturnType<typeof createRAFTimer>

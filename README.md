@@ -18,9 +18,9 @@ $ npm install @wxhccc/es-util --save
 #### in webpack or node
 
 ```javascript
-import * as EsUtil from 'es-util'
-// or import { xxx } from 'es-util'
-// or const EsUtil = require('es-util')
+import * as EsUtil from '@wxhccc/es-util'
+// or import { xxx } from '@wxhccc/es-util'
+// or const EsUtil = require('@wxhccc/es-util')
 
 // example, array2tree
 const array = [
@@ -78,7 +78,7 @@ transform an array to tree structure
 Example
 
 ```javascript
-import { array2tree } from 'es-util'
+import { array2tree } from '@wxhccc/es-util'
 
 const array = [
   { id: 1, parentId: 0, name: 'language' },
@@ -175,7 +175,7 @@ transform tree structure to an array
 Example
 
 ```javascript
-import { tree2array } from 'es-util'
+import { tree2array } from '@wxhccc/es-util'
 
 const tree = {
   id: 0,
@@ -227,7 +227,7 @@ Check whether the Chinese id number provided is valid
 Example
 
 ```javascript
-import { ChinaIdCardValid } from 'es-util'
+import { ChinaIdCardValid } from '@wxhccc/es-util'
 
 
 console.log(ChinaIdCardValid('[valid IDcard]')
@@ -252,7 +252,7 @@ Check whether the formulaString provided is valid
 Example
 
 ```javascript
-import { formulaValidate } from 'es-util'
+import { formulaValidate } from '@wxhccc/es-util'
 
 
 console.log(formulaValidate('A+B*(D-C/E)')
@@ -282,7 +282,7 @@ create an object from an object array.
 Example
 
 ```javascript
-import { mapToObject } from 'es-util'
+import { mapToObject } from '@wxhccc/es-util'
 
 const array = [
   { key: 'a', value: 'b', name: 'afsfsdfe' },
@@ -316,7 +316,7 @@ checkout an array from an object by gived keys, you can merge new data to object
 Example
 
 ```javascript
-import { checkoutBy } from 'es-util'
+import { checkoutBy } from '@wxhccc/es-util'
 
 const configs = {
   a: { key: 1, name: 'afsfsdfe' },
@@ -352,7 +352,7 @@ pick and rename object's keys
 Example
 
 ```javascript
-import { pickRenameKeys } from 'es-util'
+import { pickRenameKeys } from '@wxhccc/es-util'
 
 const configs = {
   a: { name: 'afsfsdfe' },
@@ -386,7 +386,7 @@ transform byte size to a string in the specified format
 Example
 
 ```javascript
-import { byteStringify } from 'es-util'
+import { byteStringify } from '@wxhccc/es-util'
 
 byteStringify(1234)
 /*log '1.2 KB'*/
@@ -460,6 +460,22 @@ return an emitter instance with `on`, `off` and some other methods to handle wit
 ### `pageCommunicate(options)`
 
 return an instance which can used to communicate between same-origin pages, powered by `eventTargetEmitter`
+
+## raf-timer module
+
+> v1.8.0 add
+
+### `createRAFTimer(options)`
+
+return an requestAnimationFrame timer instance. used to instead of window.setTimout and window.setInterval.
+
+## date-time module
+
+> v1.8.0 add
+
+### `secondsToDuration(number, maxUnit)`
+
+parse seconds to duration detail object
 
 ## License
 MIT
