@@ -16,5 +16,6 @@
     "noImplicitThis": true,
     "lib": ["esnext", "DOM"],
     "types": ["jest", "node"]
-  }
+  },
+  "include": ["src/**/*.ts"]
 }

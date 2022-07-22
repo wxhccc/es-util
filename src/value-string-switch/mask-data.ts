@@ -1,4 +1,4 @@
-interface MaskDataOptions {
+export interface MaskDataOptions {
   /** 替换的字符，默认为* */
   maskWith?: string
   /** 起始字符索引，为负数时从字符串结尾起倒数第几个数开始 */
@@ -12,7 +12,10 @@ interface MaskDataOptions {
   /** 内置的默认的的处理模式，会预设一些属性值，属性值可以被覆盖 */
   mode?: 'telphone' | 'idcard'
 }
-const modeIndexs: Record<NonNullable<MaskDataOptions['mode']>, MaskDataOptions> = {
+const modeIndexs: Record<
+  NonNullable<MaskDataOptions['mode']>,
+  MaskDataOptions
+> = {
   telphone: { startCharIndex: -8, endCharIndex: -5 },
   idcard: { startCharIndex: -12, endCharIndex: -5 }
 }
@@ -20,17 +23,26 @@ const modeIndexs: Record<NonNullable<MaskDataOptions['mode']>, MaskDataOptions> 
  * 对给定的字符串进行脱敏处理
  * @param data 需要处理的字符串
  * @param options 配置参数对象
- * @returns 
+ * @returns
  */
 export function maskData(data: string, options?: MaskDataOptions) {
   if (typeof data !== 'string' || !data) {
     return ''
   }
-  const modeOpts = options && options.mode && modeIndexs[options.mode] ? modeIndexs[options.mode] : {}
-  const { maskWith, startCharIndex: start = 0, endCharIndex: end, startFrom, endUntil } = { maskWith: '*', ...modeOpts, ...options }
+  const modeOpts =
+    options && options.mode && modeIndexs[options.mode]
+      ? modeIndexs[options.mode]
+      : {}
+  const {
+    maskWith,
+    startCharIndex: start = 0,
+    endCharIndex: end,
+    startFrom,
+    endUntil
+  } = { maskWith: '*', ...modeOpts, ...options }
   let handleData = data
   let beforeChars = ''
-  let afterChars  = ''
+  let afterChars = ''
   const startFromIndex = startFrom ? data.indexOf(startFrom) : -1
   if (startFromIndex > -1) {
     const index = startFromIndex + (startFrom as string).length
@@ -38,19 +50,22 @@ export function maskData(data: string, options?: MaskDataOptions) {
     beforeChars = data.slice(0, index)
   }
   const endUtilIndex = endUntil ? data.lastIndexOf(endUntil) : -1
-  if (endUtilIndex  > -1) {
+  if (endUtilIndex > -1) {
     handleData = handleData.slice(0, endUtilIndex)
     afterChars = data.slice(endUtilIndex)
   }
   const chars = handleData.split('')
   const newChars = [beforeChars]
   const charLen = chars.length
-  const indexs = [start >= 0 ? start : charLen + start, end !== undefined ? (end >= 0 ? end : charLen + end) : charLen - 1]
+  const indexs = [
+    start >= 0 ? start : charLen + start,
+    end !== undefined ? (end >= 0 ? end : charLen + end) : charLen - 1
+  ]
   let [startIdx, endIdx] = indexs
   endIdx = endIdx > 0 && endIdx < charLen ? endIdx : charLen - 1
   startIdx = startIdx >= 0 && startIdx <= endIdx ? startIdx : 0
   chars.forEach((char, idx) => {
-      newChars.push(idx >= startIdx && idx <= endIdx ? maskWith : char)
+    newChars.push(idx >= startIdx && idx <= endIdx ? maskWith : char)
   })
   newChars.push(afterChars)
   return newChars.join('')

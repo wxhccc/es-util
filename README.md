@@ -410,6 +410,8 @@ byteStringify(1234, { detail: true, standard: 'metric', precision: 3 })
 
 ## promise module
 
+> this module has been refactor in v2.0，no longer support vue/react instance detection because hooks. 
+
 ### `awaitWrapper(promise)`
 
 wrap promise with then and catch to return `[null, data]` or `[Error, undefined]`, useful async & await
@@ -463,7 +465,7 @@ return an instance which can used to communicate between same-origin pages, powe
 
 ## raf-timer module
 
-> v1.8.0 add
+> v2.0.0 add
 
 ### `createRAFTimer(options)`
 
@@ -471,7 +473,7 @@ return an requestAnimationFrame timer instance. used to instead of window.setTim
 
 ## date-time module
 
-> v1.8.0 add
+> v2.0.0 add
 
 ### `secondsToDuration(number, maxUnit)`
 

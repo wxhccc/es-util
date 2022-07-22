@@ -1,9 +1,13 @@
 import { safeJsonParse } from './optional'
-import eventTargetEmitter, { EventPayload as OrgEventPayload, ConfigOptions as OrgCfgOps } from './event-target-emitter'
+import eventTargetEmitter, {
+  EventPayload as OrgEventPayload,
+  ConfigOptions as OrgCfgOps
+} from './event-target-emitter'
 
 export { NOMETHOD } from './event-target-emitter'
 
-export interface PcEventPayload<T = any> extends Omit<OrgEventPayload, 'originEmitterName' | 'targetEmitterName'> {
+export interface PcEventPayload<T = any>
+  extends Omit<OrgEventPayload, 'originEmitterName' | 'targetEmitterName'> {
   /** 从哪个页面发送 */
   from?: string
   /** 指定哪个页面接收 */
@@ -20,12 +24,16 @@ export interface PcConfigOptions {
 /**
  * 创建同源页面之间通信的封装实例，默认使用BroadcastChannel实现，在不支持的浏览器环境中会使用localstorage实现
  * @param options 配置对象
- * @returns 
+ * @returns
  */
-export function pageCommunicate (options?: PcConfigOptions) {
+export function pageCommunicate(options?: PcConfigOptions) {
   const { messageHanlder, currentPage } = options || {}
 
-  const { emit, on, off, createPayload, removeAllListeners } = eventTargetEmitter({ name: currentPage, customHanlderCreator: messageHanlder })
+  const { emit, on, off, createPayload, removeAllListeners } =
+    eventTargetEmitter({
+      name: currentPage,
+      customHanlderCreator: messageHanlder
+    })
 
   const onMessage = (event: MessageEvent) => emit(event.data)
 
@@ -39,14 +47,15 @@ export function pageCommunicate (options?: PcConfigOptions) {
     bc.addEventListener('message', onMessage)
   } else {
     const onStorageMessage = () => {
-      const payload = safeJsonParse<PcEventPayload>(ls.getItem(channelName) || '')
+      const payload = safeJsonParse<PcEventPayload>(
+        ls.getItem(channelName) || ''
+      )
       if (payload) {
         emit(payload)
       }
     }
     window.addEventListener('storage', onStorageMessage)
   }
-
 
   const send = (...args: Parameters<typeof createPayload>) => {
     const payload = createPayload(...args)
@@ -56,7 +65,6 @@ export function pageCommunicate (options?: PcConfigOptions) {
       const payloadWitchTs = JSON.stringify({ ...payload, ts: +new Date() })
       ls.setItem(channelName, payloadWitchTs)
     }
-    
   }
 
   const destory = () => {

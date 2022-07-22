@@ -12,7 +12,10 @@ export interface DurationDetail {
  * @param maxUnit 最大的单位，默认是小时
  * @returns DurationDetail
  */
-export const secondsToDuration = (number: number, maxUnit: Exclude<TimeUnitShort, 's'> = 'h') => {
+export const secondsToDuration = (
+  number: number,
+  maxUnit: Exclude<TimeUnitShort, 's'> = 'h'
+) => {
   const secNum = Number.isInteger(number) ? number : Math.round(number)
   const result: DurationDetail = { s: secNum % 60 }
 

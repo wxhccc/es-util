@@ -1,4 +1,5 @@
-import { AnyFunction } from "./types"
+import { AnyFunction } from './types'
+import { isFn } from './utils'
 
 export interface EventPayload<T = any> {
   /** method name to be listenered */
@@ -17,7 +18,9 @@ export interface ConfigOptions {
   /** the name of current emitter */
   name?: string
   /** creator to return custom event handler */
-  customHanlderCreator?: (watchers: WatchersMap) => <T = any>(payload: EventPayload<T>) => void
+  customHanlderCreator?: (
+    watchers: WatchersMap
+  ) => <T = any>(payload: EventPayload<T>) => void
 }
 
 export interface BindOptions {
@@ -29,19 +32,21 @@ export interface BindOptions {
 
 const isStr = (val: unknown): val is string => typeof val === 'string'
 
-export const NOMETHOD: symbol = Symbol('NOMETHOD')
+export const NOMETHOD = Symbol('NOMETHOD')
 
 /**
  * 创建emitter形式的实例，可以通过实例封装事件对象，比如websocket，得到一个更便捷的方法，具体可参考page-communicate.js文件内容
  * @param options 配置项
- * @returns 
+ * @returns
  */
-export function eventTargetEmitter (options?: ConfigOptions) {
+export function eventTargetEmitter(options?: ConfigOptions) {
   const watchers: WatchersMap = new Map([[NOMETHOD, new Set()]])
 
   const { name: currentName, customHanlderCreator } = options || {}
 
-  const customHanlder = customHanlderCreator instanceof Function ? customHanlderCreator(watchers) : null
+  const customHanlder = isFn(customHanlderCreator)
+    ? customHanlderCreator(watchers)
+    : null
 
   const splitRegExp = /\|-[a-z]+-\|/
 
@@ -53,35 +58,54 @@ export function eventTargetEmitter (options?: ConfigOptions) {
     }
   }
   const defaultHanlder = <T = any>(payload: EventPayload<T>) => {
-    const { method, data, originEmitterName: from, targetEmitterName: to } = payload || []
+    const {
+      method,
+      data,
+      originEmitterName: from,
+      targetEmitterName: to
+    } = payload || []
     if (method && typeof method === 'string') {
       const matchListeners: AnyFunction[] = []
       watchers.forEach((value, key) => {
         if (typeof key === 'string' && key.startsWith(method)) {
-          const [, eFrom,] = key.split(splitRegExp)
+          const [, eFrom] = key.split(splitRegExp)
           if (!eFrom || !from || eFrom === from) {
             matchListeners.push(...value)
           }
         }
       })
-      if (matchListeners.length && (!currentName || !to || currentName === to)) {
-        matchListeners.forEach(listener => listenerSafeRun(listener, data))
+      if (
+        matchListeners.length &&
+        (!currentName || !to || currentName === to)
+      ) {
+        matchListeners.forEach((listener) => listenerSafeRun(listener, data))
       }
     }
     const noMethodListeners = watchers.get(NOMETHOD)
     if (noMethodListeners) {
-      noMethodListeners.forEach(listener => listenerSafeRun(listener, data, payload))
+      noMethodListeners.forEach((listener) =>
+        listenerSafeRun(listener, data, payload)
+      )
     }
   }
 
-  const rootEventListener = customHanlder instanceof Function ? customHanlder : defaultHanlder
+  const rootEventListener = isFn(customHanlder) ? customHanlder : defaultHanlder
 
-  const getFullMethodName = (method: string | symbol, options?: BindOptions) => {
+  const getFullMethodName = (
+    method: string | symbol,
+    options?: BindOptions
+  ) => {
     const { limitFrom = '', namespace = '' } = options || {}
-    return (limitFrom || namespace) && typeof method === 'string' ? `${method}|-from-|${limitFrom}|-ns-|${namespace}` : method
+    return (limitFrom || namespace) && typeof method === 'string'
+      ? `${method}|-from-|${limitFrom}|-ns-|${namespace}`
+      : method
   }
 
-  const on = <T>(method: string | symbol, listener: (data: T) => any, options?: BindOptions) => {
+  const on = <T>(
+    method: string | symbol,
+    listener: (data: T) => any,
+    options?: BindOptions
+  ) => {
     if (typeof method === 'symbol' && method !== NOMETHOD) {
       return
     }
@@ -93,7 +117,11 @@ export function eventTargetEmitter (options?: ConfigOptions) {
     listeners?.add(listener)
   }
 
-  const off = (method: string | symbol, callback?: AnyFunction, options?: BindOptions) => {
+  const off = (
+    method: string | symbol,
+    callback?: AnyFunction,
+    options?: BindOptions
+  ) => {
     if (typeof method === 'symbol' && method !== NOMETHOD) {
       return
     }
@@ -118,13 +146,21 @@ export function eventTargetEmitter (options?: ConfigOptions) {
     watchers.clear()
   }
 
-  const createPayload = (methodOrPayload: string | EventPayload, data?: any, target?: string) => {
-    return isStr(methodOrPayload) ? {
-      method: methodOrPayload,
-      data,
-      ...(target && isStr(target) ? { targetEmitterName: target } : {}),
-      ...(currentName && isStr(currentName) ? { originEmitterName: currentName } : {})
-    } as EventPayload : methodOrPayload
+  const createPayload = (
+    methodOrPayload: string | EventPayload,
+    data?: any,
+    target?: string
+  ) => {
+    return isStr(methodOrPayload)
+      ? ({
+          method: methodOrPayload,
+          data,
+          ...(target && isStr(target) ? { targetEmitterName: target } : {}),
+          ...(currentName && isStr(currentName)
+            ? { originEmitterName: currentName }
+            : {})
+        } as EventPayload)
+      : methodOrPayload
   }
 
   const emit = (...args: Parameters<typeof createPayload>) => {
@@ -139,7 +175,9 @@ export function eventTargetEmitter (options?: ConfigOptions) {
   } = (all?: boolean): any => {
     if (!all) {
       const result: string[][] = []
-      watchers.forEach((_v, key) => isStr(key) && result.push(key.split(splitRegExp)))
+      watchers.forEach(
+        (_v, key) => isStr(key) && result.push(key.split(splitRegExp))
+      )
       return result
     }
     const result: string[] = []
@@ -156,7 +194,17 @@ export function eventTargetEmitter (options?: ConfigOptions) {
     return listeners ? Array.from(listeners) : []
   }
 
-  return { name: currentName, rootEventListener, on, off, emit, createPayload, removeAllListeners, getMethodNames, getListeners }
+  return {
+    name: currentName,
+    rootEventListener,
+    on,
+    off,
+    emit,
+    createPayload,
+    removeAllListeners,
+    getMethodNames,
+    getListeners
+  }
 }
 
 export default eventTargetEmitter

@@ -1,6 +1,6 @@
 {
   "name": "@wxhccc/es-util",
-  "version": "1.8.0",
+  "version": "2.0.0",
   "description": "A library that contains some useful methods",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -10,7 +10,8 @@
     "start": "npm run dev",
     "test": "jest",
     "dev": "rollup -w -c --environment NODE_ENV:development",
-    "build": "rollup -c"
+    "clean": "rimraf dist/**",
+    "build": "yarn clean && rollup -c"
   },
   "keywords": [
     "array-tree-switch",
@@ -42,23 +43,23 @@
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@types/jest": "^26.0.23",
-    "@typescript-eslint/eslint-plugin": "^2.19.0",
-    "@typescript-eslint/parser": "^2.19.0",
-    "@vue/test-utils": "^2.0.0-rc.6",
+    "@types/lodash": "^4.14.182",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
     "babel-eslint": "^8.2.6",
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.6",
-    "eslint": "^4.19.1",
-    "jest": "^26.6.3",
-    "lodash": "^4.17.15",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "rollup": "^2.45.1",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jest": "^28.1.3",
+    "jest-environment-jsdom": "^28.1.3",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.77.0",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.30.0",
+    "rollup-plugin-typescript2": "^0.32.1",
+    "ts-jest": "^28.0.7",
     "tslib": "^1.10.0",
-    "typescript": "^4.2.4",
-    "vue": "^3.0.11"
+    "typescript": "^4.7.4"
   },
   "files": [
     "dist"

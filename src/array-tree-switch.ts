@@ -1,31 +1,27 @@
-const { hasOwnProperty } = Object.prototype;
-
+import { AnyFunction } from './types'
+import { hasOwnProp, isArr, isFn } from './utils'
 export interface Node {
   [key: string]: any
 }
-
 export interface TreeNode {
   [key: string]: any
 }
-
 interface Options {
-  primaryKey?: string,
-  parentKey?: string,
+  primaryKey?: string
+  parentKey?: string
   childrenKey?: string
 }
-
 interface TreeOptions extends Options {
-  createRoot?: boolean | ((nodes: TreeNode[]) => any),
+  createRoot?: boolean | ((nodes: TreeNode[]) => any)
   parentRefKey?: boolean | string
 }
-
 interface NodeOptions extends Options {
-  hasParentKey?: boolean,
+  hasParentKey?: boolean
   returnObject?: boolean
 }
 
-function createNode (children: string, value: TreeNode = []) {
-  return { [children]: value };
+function createNode(children: string, value: TreeNode = []) {
+  return { [children]: value }
 }
 
 type Tree = TreeNode[] | { [children: string]: TreeNode[] }
@@ -39,39 +35,67 @@ type Tree = TreeNode[] | { [children: string]: TreeNode[] }
  *  @param {boolean | Function} createNode  whether create root node, or function which can return root node
  *  @param {boolean | string} parentRefKey  parent reference key of node
  */
-export function array2tree (array: Node[], options = {} as TreeOptions): Tree {
-  const { primaryKey: id, parentKey: pid, childrenKey: children, createRoot, parentRefKey } = {
+export function array2tree(
+  array: Node[],
+  options?: TreeOptions & { createNode?: false }
+): TreeNode[]
+export function array2tree(
+  array: Node[],
+  options: TreeOptions & { createNode: true }
+): { [children: string]: TreeNode[] }
+export function array2tree<T = any>(
+  array: Node[],
+  options: TreeOptions & { createNode: AnyFunction<T> }
+): T
+export function array2tree(array: Node[], options = {} as TreeOptions): Tree {
+  const {
+    primaryKey: id,
+    parentKey: pid,
+    childrenKey: children,
+    createRoot,
+    parentRefKey
+  } = {
     primaryKey: 'id',
     parentKey: 'pid',
     childrenKey: 'children',
     createRoot: false,
     parentRefKey: false,
     ...options
-  };
-  const pRefKey = parentRefKey && (typeof parentRefKey === 'string' ? parentRefKey : '_parent');
-  let nodeMap: { [id: string]: TreeNode } = {};
-  let treeNodes: TreeNode[] = [];
-  Array.isArray(array) && array.forEach(item => {
-    !hasOwnProperty.call(nodeMap, item[id]) && (nodeMap[item[id]] = Object.assign({}, item, createNode(children)));
-    hasOwnProperty.call(nodeMap, item[pid]) && nodeMap[item[pid]][children].push(Object.assign(nodeMap[item[id]], pRefKey ? { [pRefKey]: nodeMap[item[pid]] } : {}));
-    !item[pid] && treeNodes.push(nodeMap[item[id]]);
-  });
-  if (createRoot instanceof Function) {
-    return createRoot(treeNodes);
+  }
+  const pRefKey =
+    parentRefKey &&
+    (typeof parentRefKey === 'string' ? parentRefKey : '_parent')
+  const nodeMap: { [id: string]: TreeNode } = {}
+  const treeNodes: TreeNode[] = []
+  isArr(array) &&
+    array.forEach((item) => {
+      !hasOwnProp(nodeMap, item[id]) &&
+        (nodeMap[item[id]] = Object.assign({}, item, createNode(children)))
+      hasOwnProp(nodeMap, item[pid]) &&
+        nodeMap[item[pid]][children].push(
+          Object.assign(
+            nodeMap[item[id]],
+            pRefKey ? { [pRefKey]: nodeMap[item[pid]] } : {}
+          )
+        )
+      !item[pid] && treeNodes.push(nodeMap[item[id]])
+    })
+  if (isFn(createRoot)) {
+    return createRoot(treeNodes)
   } else if (createRoot) {
-    return { [children]: treeNodes };
+    return { [children]: treeNodes }
   }
-  return treeNodes;
+  return treeNodes
 }
-function nodeChildFilter (node: TreeNode, childrenKey: string): Node {
-  let newNode: Node = {};
-  for(let i in node) {
-    i !== childrenKey && (newNode[i] = node[i]);
+function nodeChildFilter(node: TreeNode, childrenKey: string): Node {
+  const newNode: Node = {}
+  for (const i in node) {
+    i !== childrenKey && (newNode[i] = node[i])
   }
-  return newNode;
+  return newNode
 }
-type Nodes = Node[];
-type NodeMap = { [id: string]: Node };
+type Nodes = Node[]
+type NodeMap = { [id: string]: Node }
 /**
  * translate tree to array
  * @param {Array/Object} tree   the node tree need to be translate
@@ -82,27 +106,52 @@ type NodeMap = { [id: string]: Node };
  *  @param {boolean} hasParentKey  whether create parent id in node
  *  @param {boolean} returnObject  whether return object or array
  */
-export function tree2array (tree: Tree, options = {} as NodeOptions) {
-  const { primaryKey: id, parentKey: pid, childrenKey: children, hasParentKey, returnObject } = Object.assign({
-    hasParentKey: true,
-    primaryKey: 'id',
-    parentKey: 'pid',
-    childrenKey: 'children',
-    returnObject: false
-  }, options);
-  let nodes = returnObject ? {} as NodeMap : [] as Nodes;
-  if (!Array.isArray(tree) && typeof tree !== 'object') return nodes;
-  function getNode (node: TreeNode, parentId: string | number | null, root = false) {
-    let baseNode: Node = hasParentKey ? {} : { [pid]: parentId };
+export function tree2array(
+  tree: Tree,
+  options?: NodeOptions & { returnObject?: false }
+): Nodes
+export function tree2array(
+  tree: Tree,
+  options: NodeOptions & { returnObject: true }
+): NodeMap
+export function tree2array(tree: Tree, options = {} as NodeOptions) {
+  const {
+    primaryKey: id,
+    parentKey: pid,
+    childrenKey: children,
+    hasParentKey,
+    returnObject
+  } = Object.assign(
+    {
+      hasParentKey: true,
+      primaryKey: 'id',
+      parentKey: 'pid',
+      childrenKey: 'children',
+      returnObject: false
+    },
+    options
+  )
+  const nodes = returnObject ? ({} as NodeMap) : ([] as Nodes)
+  if (!isArr(tree) && typeof tree !== 'object') return nodes
+  function getNode(
+    node: TreeNode,
+    parentId: string | number | null,
+    root = false
+  ) {
+    const baseNode: Node = hasParentKey ? {} : { [pid]: parentId }
     if (!root) {
-      const newNode = Object.assign(baseNode, nodeChildFilter(node, children));
-      returnObject ? ((<NodeMap>nodes)[node[id]] = newNode) : (<Nodes>nodes).push(newNode);
+      const newNode = Object.assign(baseNode, nodeChildFilter(node, children))
+      returnObject
+        ? ((<NodeMap>nodes)[node[id]] = newNode)
+        : (<Nodes>nodes).push(newNode)
     }
-    if (Array.isArray(node[children]) && node[children].length) {
-      node[children].forEach((childNode: TreeNode) => getNode(childNode, node[id]));
+    if (isArr(node[children]) && node[children].length) {
+      node[children].forEach((childNode: TreeNode) =>
+        getNode(childNode, node[id])
+      )
     }
   }
-  const rootTree = Array.isArray(tree) ? createNode(children, tree) : tree;
-  getNode(rootTree, null, true);
-  return nodes;
+  const rootTree = isArr(tree) ? createNode(children, tree) : tree
+  getNode(rootTree, null, true)
+  return nodes
 }

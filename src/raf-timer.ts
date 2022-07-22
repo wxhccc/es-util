@@ -16,7 +16,7 @@ export type TimerCallback = TaskItem['callback']
 
 /**
  * 创建一个计时器
- * @returns 
+ * @returns
  */
 export const createRAFTimer = () => {
   // 计时器句柄
@@ -82,7 +82,11 @@ export const createRAFTimer = () => {
    * @param interval callback trigger interval, unit: ms (回调触发间隔，单位：ms)
    * @param maxTime max time callback trigger (回调函数的最大触发次数)
    */
-  const addTask = (callback: TaskItem['callback'], interval: number, maxTime?: number) => {
+  const addTask = (
+    callback: TaskItem['callback'],
+    interval: number,
+    maxTime?: number
+  ) => {
     tasks.push({ callback, elapsed: 0, interval, maxTime, runTime: 0 })
   }
 

@@ -8,5 +8,6 @@ node_modules/
 .eslintcache
 *.map
 dist/
+lib/
 types/
 coverage/

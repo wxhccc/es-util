@@ -1,5 +1,5 @@
 /* eslint-env node, jest */
-import * as esUtil from '../dist'
+import * as esUtil from '../src'
 
 const { eventTargetEmitter, NOMETHOD } = esUtil
 it('should return an instance contain on, off, and so on', function () {
