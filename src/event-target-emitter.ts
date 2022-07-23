@@ -125,7 +125,7 @@ export function eventTargetEmitter(options?: ConfigOptions) {
     if (typeof method === 'symbol' && method !== NOMETHOD) {
       return
     }
-    const { limitFrom, namespace } = options || {}
+    const { namespace } = options || {}
     if (namespace && !method) {
       watchers.forEach((_value, key) => {
         if (typeof key === 'string' && key.endsWith(namespace)) {
