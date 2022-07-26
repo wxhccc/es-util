@@ -20,6 +20,7 @@ $ yarn add @wxhccc/es-util
 `<script src="https://cdn.jsdelivr.net/npm/@wxhccc/es-util/lib/index.min.js"></script>`
 
 # Usage
+[中文文档](./README-zh.md)
 
 ```javascript
 import * as EsUtil from '@wxhccc/es-util'
