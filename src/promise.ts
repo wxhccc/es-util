@@ -14,7 +14,9 @@ export async function awaitWrapper<T, K = Error>(promise: Promise<T>) {
   }
 }
 /** 防止多次promise函数运行控制器，对于响应式系统，可以同时用作BoolSwitch */
-export type LockRefHandle = [Record<string, boolean>, string]
+export type LockRefHandle<
+  T extends { [key: string]: boolean } = Record<string, boolean>
+> = [T, string]
 /** loading等状态的切换函数 */
 export type BoolSwitch = (val: boolean) => unknown
 
