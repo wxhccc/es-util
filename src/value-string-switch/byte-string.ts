@@ -36,8 +36,17 @@ interface Options {
   precision?: number
   detail?: boolean
 }
+type StrOrNum = number | string
 // translate byte num to string
-export function byteStringify(byteNum: number | string, options?: Options) {
+export function byteStringify(
+  byteNum: StrOrNum,
+  options?: Options & { detail?: false }
+): string
+export function byteStringify(
+  byteNum: StrOrNum,
+  options: Options & { detail: true }
+): { value: StrOrNum; unit: string }
+export function byteStringify(byteNum: StrOrNum, options?: Options) {
   const opts = Object.assign(
     {
       standard: 'jedec',
