@@ -1,8 +1,6 @@
 ## Es Utils library
 
-is a useful methods library, contain some functions you might need in a project which based on ES
-
-> 2.0 has broken update, see module for detail
+一个保护一些特定功能函数或模块的集合
 
 # Installation
 
@@ -20,14 +18,13 @@ $ yarn add @wxhccc/es-util
 `<script src="https://cdn.jsdelivr.net/npm/@wxhccc/es-util/lib/index.min.js"></script>`
 
 # Usage
-[中文文档](./README-zh.md)
 
 ```javascript
 import * as EsUtil from '@wxhccc/es-util'
 // or import { xxx } from '@wxhccc/es-util'
 // or const EsUtil = require('@wxhccc/es-util')
 
-// example, array2tree
+// 示例：, array2tree
 const array = [
   { id: 1, pid: 0, name: 'language' },
   { id: 2, pid: 1, name: 'english' },
@@ -66,22 +63,23 @@ console.log(EsUtil.array2tree)
 
 ### `array2tree(array, options)`  
 
-transform an array to tree structure
+将平级对象数组按指定规则转换为树型结构。
+使用引用关系进行转换，时间复杂度为n
 
 **parameters:**
-- **array**  {object[]} (The array need to transform).
-- **options**    {object}    The options.
-  - **primaryKey** {string}   the primary key of array item, default `'id'` 
-  - **parentKey** {string}   the parent key of array item, default `'pid'` 
-  - **childrenKey** {string}   the childrenKey key of tree structure node, default `'children'` 
-  - **createRoot** {boolean | (nodes: TreeNode[]) => any}   whether to create a root node, default `false`, will return an array, if `true` ,will return an object. you can pass an function as well, the transformed array will pass to function
-  - **parentRefKey** {boolean| string}   whether to create a reference of current node's parent, default `false`, will do nothing. if you set it to string or `'true'(mean '_parent')` ,will use it as the object key which point to the parent node of current node.
+- **array**  {object[]} 需要转换的对象数组.
+- **options**    {object}   
+  - **primaryKey** {string}   数组元素项中的主键, 默认是 `'id'` 
+  - **parentKey** {string}   数组元素项中的父元素, 默认是 `'pid'` 
+  - **childrenKey** {string}   生成的树节点的子元素数组的key, 默认是 `'children'` 
+  - **createRoot** {boolean | (nodes: TreeNode[]) => any}   是否需要创建一个根节点, 默认是 `false`, 会返回一个数组, 如果为`true` 则会返回一个对象. 你也可以传递一个函数来自定义返回节点的结构。
+  - **parentRefKey** {boolean | string}  是否需要创建一个特殊属性指向当前节点的父节点, 默认是 `false`, 如果设置了字符串或者 `'true'(mean '_parent')` ,则会添加指定的属性来关联父子节点，这样可以很方便得通过子节点搜索到祖先节点。
 
->warning: set the `parentRefKey` will make the return tree object/array cycling, so you can't use `JSON.stringify` to stringify it
+>警告: 设置 `parentRefKey` 会让树节点变成循环引用, 这样就不能直接用 `JSON.stringify` 序列
 
-**returns**: array or object with tree structure.
+**returns**: 节点数组，或者根节点对象
 
-Example
+示例：
 
 ```javascript
 import { array2tree } from '@wxhccc/es-util'
@@ -165,20 +163,19 @@ const tree = array2tree(array, {
 
 ### `tree2array(tree, options)`
 
-transform tree structure to an array
+将树节点转换为平级结构，使用了递归处理
 
 **parameters:**
-- **tree**            {TreeNode[] | object}    The tree structure need to transform.
-- **options**    {object}    The options.
-  - **primaryKey** {string}   the primary key of node item, default `'id'` 
-  - **parentKey** {string}   the parent key of node item, default `'pid'` 
-  - **childrenKey** {string}   the childrenKey key of node item, default `'children'`
-  - **hasParentKey** {boolean}  whether tree node has parent property, default `true`, if `false` ,will add an parent key property
+- **tree**  {TreeNode[] | object}    需要转换的树结构数据
+- **options**    {object}
+  - **primaryKey** {string}   节点项的主键, 默认是 `'id'` 
+  - **parentKey** {string}   当前节点的父节点的key, 默认是 `'pid'` 
+  - **childrenKey** {string}   节点子元素数组的属性名, 默认是 `'children'`
+  - **hasParentKey** {boolean}  节点是否有父节点字段, 默认是 `true`, 如果没有, 会创建一个新的属性
 
+**returns**: 排平后的对象数组
 
-**returns**: items array
-
-Example
+示例：
 
 ```javascript
 import { tree2array } from '@wxhccc/es-util'
@@ -220,17 +217,18 @@ console.log(tree)
 
 ## validate module
 
+表单验证模块
+
 ### `ChinaIdCardValid(idCard)`
 
-Check whether the Chinese id number provided is valid
+检查身份证ID是否符合规则
 
 **parameters:**
-- **idCard**            {string}    The IDcard number.
-
+- **idCard**            {string}    待验证的省份证号码
 
 **returns**: boolean
 
-Example
+示例：
 
 ```javascript
 import { ChinaIdCardValid } from '@wxhccc/es-util'
@@ -246,16 +244,16 @@ false
 
 ### `formulaValidate(formulaString, variables)`
 
-Check whether the formulaString provided is valid
+验证计算公式是否合法，仅支持常规四则运算公式。
 
 **parameters:**
-- **formulaString**            {string}    The formula string.
-- **variables**                {string[]}    The variables can appear in formula.
+- **formulaString**            {string}   公式字符串.
+- **variables**                {string[]}    允许出现在公式里的合法变量名称数组.
 
 
 **returns**: boolean
 
-Example
+示例：
 
 ```javascript
 import { formulaValidate } from '@wxhccc/es-util'
@@ -273,19 +271,21 @@ false
 
 ## object-array module
 
+对象和数组相关模块
+
 ### `mapToObject(objectArray, keyProp, valueProp)`
 
-create an object from an object array.
+将对象数组转换为key-value对应关系的对象，一般用于字典对象的快速匹配
 
 **parameters:**
-- **objectArray**      {object[]}    The source object array.
-- **keyProp**          {string | (item: object, index: number) => string}    The property of array item be used for key, or the function to create object key, default `"key"`.
-  > if array item not contain key or function not return a string/number，the item will ignore.
-- **valueProp**        {string | (item: object, index: number) => string}    The property of array item be used for value, or the function to create object value, default `"value"`.
+- **objectArray**      {object[]}    原对象数组
+- **keyProp**          {string | (item: object, index: number) => string}    作为生成对象的key的数据项的属性名，默认是 `"key"`. 也可以用函数来动态返回key
+  > 如果对象不包含指定的key, 或者函数返回了非字符串或数字类型的结果，则此数据项会被忽略，你也可以用此特性来过滤部分数据项.
+- **valueProp**        {string | (item: object, index: number) => string}   作为生成对象的value的数据项的属性名，默认是 `"value"`. 也可以用函数来动态返回value.
 
 **returns**: object
 
-Example
+示例：
 
 ```javascript
 import { mapToObject } from '@wxhccc/es-util'
@@ -307,16 +307,17 @@ console.log(mapToObject(array, item => (item.key + item.value), 'name'))
 
 ### `checkoutBy(object, keys, mergeFn)`
 
-checkout an array from an object by gived keys, you can merge new data to object item
+从一个配置项对象中挑出指定的项并返回为数组，常用于通用表格列的统一定义。你也可以在挑出时设定新的属性来覆盖默认属性
 
 **parameters:**
-- **object**      {object}    The source object.
-- **keys**          {string[] | Record<string, any>}    The properties array of `object`. or an object contains keys which you want to pick from `object` and values you want to merge to those picked values. if keys not provided, will return `Object.values(object)`
-- **mergeFn**        {(objItem: object, newItem: any) => object}  this method use `Object.assign` to merge values where two value are object default, you can provide custom function to merge value.
+- **object**      {object}    原配置对象.
+- **keys**          {string[] | Record<string, null | object>}   `object` 对象的属性名数组. 或者传入一个对象，对象的key
+  为需要挑出的属性名，对应的值如果为fasly则直接挑出默认配置，如果为对象则进行浅合并. 如果不提供此参数，则会返回 `Object.values(object)`
+- **mergeFn**        {(objItem: object, newItem: any) => object}  如果浅合并无法满足需求，可以使用自定义合并逻辑，比如使用loadash的merge
 
 **returns**: array
 
-Example
+示例：
 
 ```javascript
 import { checkoutBy } from '@wxhccc/es-util'
@@ -344,15 +345,15 @@ console.log(checkoutBy(configs, { d: 123, b: { name: { b: 'aaa' } } }, merge)
 
 ### `pickRenameKeys(object, keysMap)`
 
-pick and rename object's keys
+从对象中挑选指定属性和对应值，并对属性进行重命名。常用于从非标准接口数据（比如接口字段为下划线连接方式）中挑选指定的值转换为表单绑定值
 
 **parameters:**
-- **object**      {object}    The source object.
+- **object**      {object}    原对象.
 - **keysMap**          {Record<string, string>}    The `oldKey-newKey` object
 
 **returns**: array
 
-Example
+示例：
 
 ```javascript
 import { pickRenameKeys } from '@wxhccc/es-util'
@@ -371,22 +372,24 @@ console.log(pickRenameKeys(configs, { 'a': 'a1', 'c': 'c3', 'd': 'd' })
 
 ## value-string-switch module
 
+字符串转换相关模块
+
 ### `byteStringify(byteNum, options)`
 
-transform byte size to a string in the specified format
+字节数格式化，支持jedec，metric，iec3种形式
 
 **parameters:**
-- **byteNum**            {number}    The size number need to transform.
+- **byteNum**            {number}    需要格式化的字节数
 - **options**    {object}    The options.
-  - **standard** {string}   the standard used to transform, default `'jedec'`, suport `'metric'`, `'iec'`. [Metric, IEC and JEDEC units](https://en.wikipedia.org/wiki/Gigabyte)
-  - **unitLvl** {string}   the unit lvl to transform byte size, default `'auto'`. suport `'B','K','M','G','T','P','E','Z','Y'`
-  - **precision** {number}   the precision of value, default `1` 
-  - **detail** {boolean}   whether to return an object of detai info, default `false`.
+  - **standard** {string}   转换标准, 默认是 `'jedec'`, 支持 `'metric'`, `'iec'`. [Metric, IEC and JEDEC units](https://en.wikipedia.org/wiki/Gigabyte)
+  - **unitLvl** {string}   转换的最大单位, 默认是 `'auto'`. 支持 `'B','K','M','G','T','P','E','Z','Y'`
+  - **precision** {number}   保留的小数部分精度, 默认是 `1` 
+  - **detail** {boolean}   是否需要范围完整信息对象，结构为：{ value, unit }, 默认是 `false`.
 
 
 **returns**: string or object
 
-Example
+示例：
 
 ```javascript
 import { byteStringify } from '@wxhccc/es-util'
@@ -402,7 +405,7 @@ byteStringify(1234, { detail: true, standard: 'metric', precision: 3 })
 
 ```
 
-> these methods remove from v1.2.0  you can use lodash instead
+> 下面3个函数从1.2.0版本后已经移除，你可以使用lodash替代
 ### ~~`camelize(string)`~~
 
 ### ~~`hyphenate(string)`~~
@@ -413,11 +416,15 @@ byteStringify(1234, { detail: true, standard: 'metric', precision: 3 })
 
 ## promise module
 
+promise相关模块
+
 ### `awaitWrapper(promise)`
 
-wrap promise with then and catch to return `[null, data]` or `[Error, undefined]`, useful async & await
+包裹promise对象，自动处理数据和捕捉错误，并返回`[null, data]` 或 `[Error, undefined]`格式的数据，通常用在async & await写法后
 
-Example
+> ps: 和`await-to-js`包提供的功能一致，主要是减少包数量 
+
+示例：
 
 ```javascript
 import { awaitWrapper } from '@wxhccc/es-util'
@@ -431,26 +438,23 @@ const [err, data] = await awaitWrapper(Promise.reject())
 
 ### `wp(promise, [wrap])`
 
-> this module has been refactor in v2.0，no longer support vue/react instance detection because there is no need in hooks. 
+> 这个函数已经在v2.0版本进行重写，不再支持vue/react组件内环境的检测功能，因为现在hook写法更广泛。 
 
-wrap promise or a function return promise with lock method to control UI or forbiden multi task at same time
+传入promise对象或者返回promise对象的函数，然后可以通过配置对象实现awaitWrapper包裹，自动设置loading状态，阻止重复调用的功能
 
 **parameters:**
-- **promise**    {Promise | () => Promise}    promise object or a function return promise object. when use function and lock, it can prevent second call before previous promise settled
+- **promise**    {Promise|() => Promise}    promise 对象或返回promise对象的函数. 使用函数形式时，配合lock/syncRefHandle, 可以实现阻止重复调用的功能
 - **options**    {WrapOptions}
-  - **wrap**    {boolean} whether use `awaitWrapper` to wrap then promise.
+  - **wrap**    {boolean} 是否需要用`awaitWrapper`包裹promise对象，默认是 `false`
   - **lock**    {(bool) => void | [ref, lockKey]}
-    ~~string: v2.0 not support component instance bind, so can't use string~~
+    ~~string: v2.0不监测组件实例环境，所以不再支持字符串形式的参数~~ 
+    
+    function: 函数形式，可以传入一个函数，例如在react hooks里，可以传入setXXX
 
-    function: useful in ReactHook component, pass setXXX to method
+    syncRefHandle: 形如 `[object, keyOfObject]` 的数组，会自动设置`object[keyOfObject]`的值，适用于vue3的ref形式。
+  - **syncRefHandle**    {[ref, lockKey]}  如果在react中，state无法确保同步更新，所以需要锁定功能时，lock和syncRefHandle参数都需要，所以额外提供一个参数来获取同步状态。
 
-    syncRefHandle: an array such as `[object, keyOfObject]` useful when need to lock promise when value can't be update sync, such as React
-  - **syncRefHandle**    {[ref, lockKey]}  when you need function and syncRefHandle at sametime
-
-**returns**: a extends promise object with `__lockValue` getter and `unlock` method
-
-> ~~can be use in react and vue2/3 instance when bind this~~
-> 2.0 will not bind this
+**returns**: promise
 
 
 #### use in react hooks
@@ -522,18 +526,20 @@ runTask()
 
 ## event-target-emitter module
 
+事件相关模块
+
 > v1.7.0 add
 
-this is a simple event emitter, you can find other emitter package is you need more function
+一个简单的emitter实现，如果需要更复杂功能的emitter可以搜索其他npm包
 
 ### `eventTargetEmitter(options)`
 
-return an emitter instance with `on`, `off`, `emit` and some other methods to handle with EventTarget
+返回一个emitter实例， 包含 `on`, `off`, `emit` 等方法，可用来处理EventTarget相关逻辑
 
 **parameters:**
 - **options**    {ConfigOptions}
-  - **name**    {string} the name of current emitter. can used to limit message received from
-  - **customHanlderCreator**    {(watchers) => function}  custome handler creator, you can handle message distribute logic as you want.
+  - **name**    {string} 当前emitter的名称，不同浏览器窗口的应用可以用来限制数据来源
+  - **customHanlderCreator**    {(watchers) => (payload) => void}  自定义事件处理逻辑创建函数，传入所有监听函数，需要返回一个函数。
 
 ```javascript
 import { eventTargetEmitter } from '@wxhccc/es-util'
@@ -564,7 +570,7 @@ websocket.on('message', (task) => {
 const emitter = eventTargetEmitter({ name: 'page-a' })
 
 const runTask = () => {
-  // this method will call when received message from page-b, but not call when received message from page-c
+  // 这个函数仅在接受到从page-b发送的消息时才会调用，其他页面发送时不会调用
   console.log('do someting')
 }
 emitter.on('to-run-task', runTask, { limitFrom: 'page-b' })
@@ -590,13 +596,13 @@ localStorage.setItem('page-communicate', payload)
 
 ## page-communicate module
 
+同域名页面间通信方案模块
+
 > v1.7.0 add
 
 ### `pageCommunicate(options)`
 
-return an instance which can used to communicate between same-origin pages, powered by `eventTargetEmitter`
-
-this module is full realize of `eventTargetEmitter` eg.2, it use `BroadcastChannel` if it supported, otherwise will use `window.localStorage
+返回一个实例，可用于在同源页面间进行通信，基于`eventTargetEmitter`事件发送器，默认使用`BroadcastChannel`api 实现，如果不支持，则会降级到 `window.localStorage`方案。
 
 ```javascript
 import { pageCommunicate } from '@wxhccc/es-util'
@@ -604,21 +610,23 @@ import { pageCommunicate } from '@wxhccc/es-util'
 const pc = pageCommunicate()
 
 pc.on('update-use-info', (newUserInfo) => {
-  // update global state
+  // 接受到更新消息后，更新本页面状态
 })
 
-// when one page change login account
+// 某个页面上切换账号后，可以在存储到storage后向其他页面发送消息
 pc.send('update-use-info', newUserInfo)
 ```
 
 
 ## raf-timer module
 
+requestAnimationFrame计时器模块
+
 > v2.0.0 add
 
 ### `createRAFTimer(options)`
 
-return an requestAnimationFrame timer instance. used to instead of window.setTimout and window.setInterval. 
+返回一个基于requestAnimationFrame的计时器实例，可以用来替代`window.setTimout` and `window.setInterval`，有更精确的时间控制，在移动端也有更好的节电效果
 
 ```javascript
 import { createRAFTimer } from '@wxhccc/es-util'
@@ -652,9 +660,13 @@ const timer = createRAFTimer({
 
 ## date-time module
 
+日期时间相关模块
+
 > v2.0.0 add
 
 ### `secondsToDuration(number, maxUnit)`
+
+将秒数按指定格式转换为具体时间范围对象
 
 ```javascript
 import { secondsToDuration } from '@wxhccc/es-util'

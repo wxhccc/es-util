@@ -1,5 +1,5 @@
 import { AnyObject } from './types'
-import { isArr, isObj, objForEch } from './utils'
+import { isArr, isObj } from './utils'
 
 /**
  * translate object array to key-value map object
