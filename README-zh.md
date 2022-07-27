@@ -6,23 +6,23 @@
 
 #### npm
 ```shell
-$ npm install @wesine/es-util
+$ npm install @wxhccc/es-util
 ```
 #### yarn
 ```shell
-$ yarn add @wesine/es-util
+$ yarn add @wxhccc/es-util
 ```
 
 #### in browser
 
-`<script src="https://cdn.jsdelivr.net/npm/@wesine/es-util/lib/index.min.js"></script>`
+`<script src="https://cdn.jsdelivr.net/npm/@wxhccc/es-util/lib/index.min.js"></script>`
 
 # Usage
 
 ```javascript
-import * as EsUtil from '@wesine/es-util'
-// or import { xxx } from '@wesine/es-util'
-// or const EsUtil = require('@wesine/es-util')
+import * as EsUtil from '@wxhccc/es-util'
+// or import { xxx } from '@wxhccc/es-util'
+// or const EsUtil = require('@wxhccc/es-util')
 
 // 示例：, array2tree
 const array = [
@@ -82,7 +82,7 @@ console.log(EsUtil.array2tree)
 示例：
 
 ```javascript
-import { array2tree } from '@wesine/es-util'
+import { array2tree } from '@wxhccc/es-util'
 
 const array = [
   { id: 1, parentId: 0, name: 'language' },
@@ -178,7 +178,7 @@ const tree = array2tree(array, {
 示例：
 
 ```javascript
-import { tree2array } from '@wesine/es-util'
+import { tree2array } from '@wxhccc/es-util'
 
 const tree = {
   id: 0,
@@ -231,7 +231,7 @@ console.log(tree)
 示例：
 
 ```javascript
-import { ChinaIdCardValid } from '@wesine/es-util'
+import { ChinaIdCardValid } from '@wxhccc/es-util'
 
 
 console.log(ChinaIdCardValid('[valid IDcard]')
@@ -256,7 +256,7 @@ false
 示例：
 
 ```javascript
-import { formulaValidate } from '@wesine/es-util'
+import { formulaValidate } from '@wxhccc/es-util'
 
 
 console.log(formulaValidate('A+B*(D-C/E)')
@@ -288,7 +288,7 @@ false
 示例：
 
 ```javascript
-import { mapToObject } from '@wesine/es-util'
+import { mapToObject } from '@wxhccc/es-util'
 
 const array = [
   { key: 'a', value: 'b', name: 'afsfsdfe' },
@@ -320,7 +320,7 @@ console.log(mapToObject(array, item => (item.key + item.value), 'name'))
 示例：
 
 ```javascript
-import { checkoutBy } from '@wesine/es-util'
+import { checkoutBy } from '@wxhccc/es-util'
 
 const configs = {
   a: { key: 1, name: 'afsfsdfe' },
@@ -356,7 +356,7 @@ console.log(checkoutBy(configs, { d: 123, b: { name: { b: 'aaa' } } }, merge)
 示例：
 
 ```javascript
-import { pickRenameKeys } from '@wesine/es-util'
+import { pickRenameKeys } from '@wxhccc/es-util'
 
 const configs = {
   a: { name: 'afsfsdfe' },
@@ -392,7 +392,7 @@ console.log(pickRenameKeys(configs, { 'a': 'a1', 'c': 'c3', 'd': 'd' })
 示例：
 
 ```javascript
-import { byteStringify } from '@wesine/es-util'
+import { byteStringify } from '@wxhccc/es-util'
 
 byteStringify(1234)
 /*log '1.2 KB'*/
@@ -427,7 +427,7 @@ promise相关模块
 示例：
 
 ```javascript
-import { awaitWrapper } from '@wesine/es-util'
+import { awaitWrapper } from '@wxhccc/es-util'
 
 const [err, data] = await awaitWrapper(Promise.resolve(1))
 /*log [null, 1] */
@@ -460,7 +460,7 @@ const [err, data] = await awaitWrapper(Promise.reject())
 #### use in react hooks
 
 ```javascript
-import { wp } from '@wesine/es-util'
+import { wp } from '@wxhccc/es-util'
 
 const [loading, setLoading] = useState(false)
 
@@ -497,7 +497,7 @@ runTask()
 #### use in vue setup
 
 ```javascript
-import { wp } from '@wesine/es-util'
+import { wp } from '@wxhccc/es-util'
 
 const loading = ref(false)
 
@@ -542,7 +542,7 @@ runTask()
   - **customHanlderCreator**    {(watchers) => (payload) => void}  自定义事件处理逻辑创建函数，传入所有监听函数，需要返回一个函数。
 
 ```javascript
-import { eventTargetEmitter } from '@wesine/es-util'
+import { eventTargetEmitter } from '@wxhccc/es-util'
 
 /** eg.1 */
 const emitter = eventTargetEmitter()
@@ -605,7 +605,7 @@ localStorage.setItem('page-communicate', payload)
 返回一个实例，可用于在同源页面间进行通信，基于`eventTargetEmitter`事件发送器，默认使用`BroadcastChannel`api 实现，如果不支持，则会降级到 `window.localStorage`方案。
 
 ```javascript
-import { pageCommunicate } from '@wesine/es-util'
+import { pageCommunicate } from '@wxhccc/es-util'
 
 const pc = pageCommunicate()
 
@@ -629,7 +629,7 @@ requestAnimationFrame计时器模块
 返回一个基于requestAnimationFrame的计时器实例，可以用来替代`window.setTimout` and `window.setInterval`，有更精确的时间控制，在移动端也有更好的节电效果
 
 ```javascript
-import { createRAFTimer } from '@wesine/es-util'
+import { createRAFTimer } from '@wxhccc/es-util'
 
 const timer = createRAFTimer()
 // start timer
@@ -669,7 +669,7 @@ const timer = createRAFTimer({
 将秒数按指定格式转换为具体时间范围对象
 
 ```javascript
-import { secondsToDuration } from '@wesine/es-util'
+import { secondsToDuration } from '@wxhccc/es-util'
 
 const detail = secondsToDuration(12345678)
 /*log {h: 3429, m: 21, s: 18} */
