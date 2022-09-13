@@ -42,7 +42,7 @@ export function pageCommunicate(options?: PcConfigOptions) {
 
   const channelName = 'PAGE_COMMUNICATE_CHANNEL'
 
-  if (typeof BroadcastChannel !== undefined) {
+  if (typeof window.BroadcastChannel !== undefined) {
     bc = new BroadcastChannel(channelName)
     bc.addEventListener('message', onMessage)
   } else {
