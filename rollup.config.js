@@ -73,6 +73,7 @@ function getConfig(env) {
       __dirname,
       'src/value-string-switch/index.ts'
     ),
+    'array-tree-switch': path.resolve(__dirname, 'src/array-tree-switch.ts'),
     'object-array': path.resolve(__dirname, 'src/object-array.ts'),
     promise: path.resolve(__dirname, 'src/promise.ts'),
     validate: path.resolve(__dirname, 'src/validate.ts'),

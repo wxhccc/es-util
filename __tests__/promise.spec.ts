@@ -12,6 +12,10 @@ describe('#awaitWrapper', () => {
   })
 })
 
+interface Ref<T> {
+  value: T
+}
+
 describe('#wp', () => {
   it('should call method twice if lock is function', () => {
     const lock = jest.fn()
@@ -23,7 +27,16 @@ describe('#wp', () => {
     return promise
   })
   it('should switch lockRefHandle value if lock is lockRefHandle', () => {
-    const loading = { value: false }
+    const loading: Record<string, boolean> = { value: false }
+    const promise = wp(Promise.resolve(1), { lock: [loading, 'value'] })
+    expect(loading.value).toBe(true)
+    promise.finally(() => {
+      expect(loading.value).toBe(false)
+    })
+    return promise
+  })
+  it('test special types such as Ref for lockRefHandle', () => {
+    const loading: Ref<boolean> = { value: false }
     const promise = wp(Promise.resolve(1), { lock: [loading, 'value'] })
     expect(loading.value).toBe(true)
     promise.finally(() => {

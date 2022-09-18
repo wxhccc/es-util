@@ -1,6 +1,6 @@
 {
   "name": "@wxhccc/es-util",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "A library that contains some useful methods",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -23,7 +23,11 @@
     "validate",
     "mapToObject",
     "string-switch",
-    "mask data"
+    "mask data",
+    "event emitter",
+    "promise",
+    "requestAnimationFrame",
+    "page communicate"
   ],
   "author": "wxhccc",
   "license": "MIT",

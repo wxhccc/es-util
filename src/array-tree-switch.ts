@@ -1,4 +1,4 @@
-import { AnyFunction } from './types'
+import { AnyFunction, StrOrNum } from './types'
 import { hasOwnProp, isArr, isFn } from './utils'
 export interface Node {
   [key: string]: any
@@ -7,8 +7,13 @@ export interface TreeNode {
   [key: string]: any
 }
 interface Options {
+  /** 主键key */
   primaryKey?: string
+  /** 文字key */
+  labelKey?: string
+  /** 父元素key */
   parentKey?: string
+  /** 子元素集合key */
   childrenKey?: string
 }
 interface TreeOptions extends Options {
@@ -154,4 +159,86 @@ export function tree2array(tree: Tree, options = {} as NodeOptions) {
   const rootTree = isArr(tree) ? createNode(children, tree) : tree
   getNode(rootTree, null, true)
   return nodes
+}
+
+export interface TreeKeyNode {
+  keyVlaue: StrOrNum
+  keyLabel?: StrOrNum
+  parent?: TreeKeyNode
+  children: TreeKeyNode[]
+}
+
+export interface AnalyseTreeData<T extends TreeNode = TreeNode> {
+  nodes: T[]
+  childKeysMaps: Record<StrOrNum, StrOrNum[]>
+  keyNodeMap: Record<string, TreeKeyNode>
+  disabledKeys: StrOrNum[]
+}
+type AnalyseTreeModule = keyof AnalyseTreeData
+
+interface TreeAnalyseOptions extends Omit<Options, 'parentKey'> {
+  disabledKey?: string
+}
+/**
+ * 分析id唯一的树节点，得到不同结构的数据
+ * @param treeData 树数据
+ * @param options 配置项
+ * @param keys 可指定的数据类型的key，默认返回完整数据
+ * @returns
+ */
+export function treeAnalyse<T extends TreeNode = TreeNode>(
+  treeData: T[],
+  options?: TreeAnalyseOptions,
+  keys?: AnalyseTreeModule[]
+) {
+  const result: AnalyseTreeData<T> = {
+    nodes: [],
+    childKeysMaps: {},
+    keyNodeMap: {},
+    disabledKeys: []
+  }
+  const moduleKeys: AnalyseTreeModule[] = Array.isArray(keys)
+    ? keys
+    : ['nodes', 'keyNodeMap', 'childKeysMaps', 'disabledKeys']
+  const { primaryKey, labelKey, disabledKey, childrenKey } = {
+    primaryKey: 'id',
+    labelKey: 'name',
+    childrenKey: 'children',
+    disabledKey: 'disabled',
+    ...options
+  } as Required<TreeAnalyseOptions>
+  const [hasNodes, hasCKM, hasKNM, hasDK] = (
+    Object.keys(result) as AnalyseTreeModule[]
+  ).map((m) => moduleKeys.includes(m))
+  const readTreeData = (nodes: T[], parent?: TreeKeyNode) => {
+    nodes.forEach((node) => {
+      const {
+        [primaryKey]: key,
+        [labelKey]: label,
+        [childrenKey]: children,
+        [disabledKey]: disabled
+      } = node
+      let keyNode: TreeKeyNode | undefined = undefined
+      if (hasNodes) {
+        result.nodes.push(node)
+      }
+      if (hasKNM && key !== undefined) {
+        keyNode = { keyVlaue: key, keyLabel: label, parent, children: [] }
+        parent?.children.push(keyNode)
+        result.keyNodeMap[key] = keyNode
+      }
+      if (hasDK && disabled && key !== undefined) {
+        result.disabledKeys.push(key)
+      }
+
+      if (Array.isArray(children) && children.length) {
+        if (hasCKM) {
+          result.childKeysMaps[key] = children.map((item) => item[primaryKey])
+        }
+        readTreeData(children, keyNode)
+      }
+    })
+  }
+  treeData && readTreeData(treeData)
+  return result
 }
