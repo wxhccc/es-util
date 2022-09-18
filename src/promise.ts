@@ -13,10 +13,9 @@ export async function awaitWrapper<T, K = Error>(promise: Promise<T>) {
     return [err as K, undefined] as [K, undefined]
   }
 }
+export type BoolRef = { [key: string]: boolean }
 /** 防止多次promise函数运行控制器，对于响应式系统，可以同时用作BoolSwitch */
-export type LockRefHandle<
-  T extends { [key: string]: boolean } = Record<string, boolean>
-> = [T, string]
+export type LockRefHandle<T = BoolRef> = [T, keyof T]
 /** loading等状态的切换函数 */
 export type BoolSwitch = (val: boolean) => unknown
 
@@ -26,13 +25,13 @@ export type BoolSwitch = (val: boolean) => unknown
  * @param wrap whether use awaitWrap to wrap result
  */
 
-export interface WpOptions {
+export interface WpOptions<R = BoolRef> {
   /** whether use `awaitWrapper` to wrap then promise. */
   wrap?: boolean
   /** useful in Hook / Composition Api, you can pass setXXX to method */
-  lock?: BoolSwitch | LockRefHandle
+  lock?: BoolSwitch | LockRefHandle<R>
   /** when you need function and syncRefHandle at sametime, in react hooks */
-  syncRefHandle?: LockRefHandle
+  syncRefHandle?: LockRefHandle<R>
 }
 
 type WpReturn<T> = Promise<T | undefined>
@@ -40,20 +39,23 @@ type WpArrReturn<T> = Promise<[null, T] | [Error, undefined]>
 type WpMayLockArrReturn<T> = Promise<[null, T] | [Error, undefined]>
 type WpPromise<T> = Promise<T> | (() => Promise<T>)
 
-function wrapPromise<T>(
+function wrapPromise<T, R = BoolRef>(
   promise: WpPromise<T>,
-  options?: WpOptions & { wrap?: false }
+  options?: WpOptions<R> & { wrap?: false }
 ): WpReturn<T>
-function wrapPromise<T>(
+function wrapPromise<T, R = BoolRef>(
   promise: Promise<T>,
-  options?: WpOptions & { wrap: true }
+  options?: WpOptions<R> & { wrap: true }
 ): WpArrReturn<T>
-function wrapPromise<T>(
+function wrapPromise<T, R = BoolRef>(
   promise: () => Promise<T>,
-  options?: WpOptions & { wrap: true }
+  options?: WpOptions<R> & { wrap: true }
 ): WpMayLockArrReturn<T>
-function wrapPromise<T>(promise: WpPromise<T>, options?: WpOptions) {
-  const { wrap, lock, syncRefHandle }: WpOptions = { ...options }
+function wrapPromise<T, R = BoolRef>(
+  promise: WpPromise<T>,
+  options?: WpOptions<R>
+) {
+  const { wrap, lock, syncRefHandle }: WpOptions<R> = { ...options }
 
   let lockSwitchHook: BoolSwitch | undefined = undefined
   let lockRefHandle: LockRefHandle | undefined = undefined
@@ -62,7 +64,8 @@ function wrapPromise<T>(promise: WpPromise<T>, options?: WpOptions) {
 
   const stateLock = (bool: boolean) => {
     if (lockRefHandle) {
-      lockRefHandle[0][lockRefHandle[1]] = bool
+      const [ref, key] = lockRefHandle
+      ref[key] = bool
     }
     if (lockSwitchHook) {
       lockSwitchHook(bool)
@@ -70,7 +73,7 @@ function wrapPromise<T>(promise: WpPromise<T>, options?: WpOptions) {
   }
   const checkLock = () => {
     // use refHandle if state not update sync
-    return lockRefHandle ? lockRefHandle[0][lockRefHandle[1]] : false
+    return lockRefHandle ? !!lockRefHandle[0][lockRefHandle[1]] : false
   }
   if (lock) {
     const isRefHandle = (val: unknown): val is LockRefHandle =>

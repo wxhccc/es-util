@@ -1,5 +1,5 @@
 /* eslint-env node, jest */
-import { array2tree, tree2array } from '../src'
+import { array2tree, tree2array, treeAnalyse } from '../src'
 
 describe('#array2tree', function () {
   const array = [
@@ -47,5 +47,51 @@ describe('#tree2array', function () {
       '2': { id: 2, pid: 1, name: 'aaaa' },
       '3': { id: 3, pid: 0, name: 'aaaa' }
     })
+  })
+})
+
+describe('#treeAnalyse', function () {
+  const treeArr = [
+    {
+      id: 1,
+      pid: 0,
+      name: 'aaaa',
+      children: [{ id: 2, pid: 1, name: 'aaaa', disabled: true, children: [] }]
+    },
+    { id: 3, pid: 0, name: 'aaaa', children: [] }
+  ]
+  it('should return an object contain all module data', function () {
+    const result = treeAnalyse(treeArr)
+    const { keyNodeMap } = result
+    expect(result.nodes).toHaveLength(3)
+    expect(result.childKeysMaps).toEqual({ 1: [2] })
+    expect(keyNodeMap[2].parent).toBe(keyNodeMap[1])
+    expect(result.disabledKeys).toEqual([2])
+  })
+  it(`should return part of modules when set keys`, function () {
+    const result = treeAnalyse(treeArr, undefined, ['nodes', 'childKeysMaps'])
+    expect(result.nodes).toHaveLength(3)
+    expect(result.childKeysMaps).toEqual({ 1: [2] })
+    expect(result.keyNodeMap).toEqual({})
+    expect(result.disabledKeys).toHaveLength(0)
+  })
+  const treeArr1 = [
+    {
+      key: 1,
+      pid: 0,
+      label: 'aaaa',
+      children: [
+        { key: 2, pid: 1, label: 'aaaa', disabled: true, children: [] }
+      ]
+    }
+  ]
+  it('you can use options to custom node property', function () {
+    const result = treeAnalyse(treeArr1, {
+      primaryKey: 'key',
+      labelKey: 'label'
+    })
+    expect(result.childKeysMaps).toEqual({ 1: [2] })
+    expect(result.keyNodeMap[1].keyLabel).toBeTruthy()
+    expect(result.disabledKeys).toEqual([2])
   })
 })

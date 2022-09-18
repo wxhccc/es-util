@@ -218,6 +218,82 @@ console.log(tree)
 */
 ```
 
+### `treeAnalyse(tree, options, keys)`
+
+> v2.1.0 add
+
+analyse tree data, return an object contain typed handled data
+
+**parameters:**
+- **tree**            {TreeNode[] | object}    The tree structure need to transform.
+- **options**    {object}    The options.
+  - **primaryKey** {string}   the primary key of node item, default `'id'` 
+  - **labelKey** {string}   the primary key of node item, default `'name'` 
+  - **disabledKey** {string}   the disabled key of node item, default `'disabled'` 
+  - **childrenKey** {string}   the childrenKey key of node item, default `'children'`
+- **keys**        {('nodes' | 'keyNodeMap' | 'childKeysMaps' | 'disabledKeys')[]} the modules need to handle
+
+
+**returns**: AnalyseTreeData
+
+Example
+
+```javascript
+import { treeAnalyse } from '@wxhccc/es-util'
+
+const tree = [
+  {
+    id: 1,
+    name: 'language',
+    children: [
+      {
+        id: 2,
+        name: 'english',
+        children: []
+      },
+      {
+        id: 3,
+        name: 'chinese',
+        children: []
+      }
+    ]
+  }
+]
+
+const result = array2tree(array)
+console.log(result)
+/* log
+{
+  "nodes": [
+    {
+      "id": 1,
+      "name": "language",
+      "children": [{…}, {…}]
+    },
+    {
+      "id": 2,
+      "name": "english",
+      "children": []
+    },
+    {
+      "id": 3,
+      "name": "chinese",
+      "children": []
+    }
+  ],
+  "childKeysMaps": {
+    "1": [2, 3]
+  },
+  "keyNodeMap": {
+    1: {keyVlaue: 1, keyLabel: 'language', parent: undefined, children: [{…}, {…}]},
+    2: {keyVlaue: 2, keyLabel: 'english', parent: {…}, children: [] },
+    3: {keyVlaue: 3, keyLabel: 'chinese', parent: {…}, children: [] }
+  },
+  "disabledKeys": []
+}
+*/
+```
+
 ## validate module
 
 ### `ChinaIdCardValid(idCard)`
