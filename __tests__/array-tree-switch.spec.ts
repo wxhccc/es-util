@@ -22,6 +22,20 @@ describe('#array2tree', function () {
     const tree = array2tree(array, { parentRefKey: true })
     expect(tree[0].children[0]._parent).toBe(tree[0])
   })
+  it('should work well even pid not ordered', function () {
+    const unsortArray = [
+      { id: 2, pid: 1, name: 'aaaa' },
+      { id: 1, pid: 0, name: 'bbb' }
+    ]
+    expect(array2tree(unsortArray)).toStrictEqual([
+      {
+        id: 1,
+        pid: 0,
+        name: 'bbb',
+        children: [{ id: 2, pid: 1, name: 'aaaa', children: [] }]
+      }
+    ])
+  })
 })
 
 describe('#tree2array', function () {

@@ -72,19 +72,34 @@ export function array2tree(array: Node[], options = {} as TreeOptions): Tree {
     (typeof parentRefKey === 'string' ? parentRefKey : '_parent')
   const nodeMap: { [id: string]: TreeNode } = {}
   const treeNodes: TreeNode[] = []
-  isArr(array) &&
-    array.forEach((item) => {
-      !hasOwnProp(nodeMap, item[id]) &&
-        (nodeMap[item[id]] = Object.assign({}, item, createNode(children)))
-      hasOwnProp(nodeMap, item[pid]) &&
-        nodeMap[item[pid]][children].push(
-          Object.assign(
-            nodeMap[item[id]],
-            pRefKey ? { [pRefKey]: nodeMap[item[pid]] } : {}
+  if (isArr(array)) {
+    const unsortChildren: Node[] = []
+    const transform = (items: Node[]) => {
+      items.forEach((item) => {
+        if (!hasOwnProp(nodeMap, item[id])) {
+          nodeMap[item[id]] = { ...item, ...createNode(children) }
+        }
+        if (!item[pid]) {
+          treeNodes.push(nodeMap[item[id]])
+        } else if (hasOwnProp(nodeMap, item[pid])) {
+          nodeMap[item[pid]][children].push(
+            Object.assign(
+              nodeMap[item[id]],
+              pRefKey ? { [pRefKey]: nodeMap[item[pid]] } : {}
+            )
           )
-        )
-      !item[pid] && treeNodes.push(nodeMap[item[id]])
-    })
+        } else {
+          unsortChildren.push(item)
+        }
+      })
+    }
+    transform(array)
+    console.log(1111, unsortChildren)
+    // 如果有父节点顺序在后的，再循环一次
+    if (unsortChildren.length) {
+      transform(unsortChildren)
+    }
+  }
   if (isFn(createRoot)) {
     return createRoot(treeNodes)
   } else if (createRoot) {
